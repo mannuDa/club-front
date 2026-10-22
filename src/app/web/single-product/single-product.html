@@ -1,0 +1,301 @@
+<section class="single-product-section" *ngIf="product && !isLoading">
+
+  <div class="container">
+    <div class="product-layout-grid">
+
+      <!-- LEFT COLUMN: GALLERY & OPTIONS -->
+      <!-- LEFT COLUMN: GALLERY & OPTIONS -->
+<!-- LEFT COLUMN: GALLERY & OPTIONS -->
+<div class="gallery-column">
+  <div class="product-gallery-wrapper">
+    
+    <!-- Desktop Left Vertical Thumbnails (Hidden on mobile) -->
+    <div class="thumbnail-vertical-list desktop-thumbnails">
+      @for (img of product.imagesPath; track $index) {
+        <div class="thumb-item" [class.active]="selectedImage === img" (click)="selectedImage = img">
+          <img [src]="imageURL + img" [alt]="product.name">
+        </div>
+      }
+    </div>
+
+    <!-- Right: Main Image Container -->
+    <div class="main-image-container">
+      <img [src]="imageURL + selectedImage" [alt]="product.name" class="main-img">
+    </div>
+
+  </div>
+
+  <!-- Mobile Horizontal Carousel (Visible ONLY on mobile below main image) -->
+  <div class="mobile-thumbnail-carousel">
+    @for (img of product.imagesPath; track $index) {
+      <div class="mobile-thumb-item" [class.active]="selectedImage === img" (click)="selectedImage = img">
+        <img [src]="imageURL + img" [alt]="product.name">
+      </div>
+    }
+  </div>
+</div>
+
+      <!-- RIGHT COLUMN: PRODUCT INFO & PURCHASE -->
+      <div class="details-column">
+        <!-- Product Attributes Section -->
+        <div class="attributes-wrapper">
+
+          <!-- Sizes -->
+          <div class="attribute-box" *ngIf="product.sizes && product.sizes.length > 0">
+            <span class="attr-label">Select Size</span>
+            <div class="chip-group">
+              <button *ngFor="let size of product.sizes" type="button" class="size-chip"
+                [class.active-chip]="selectedSize === size" (click)="selectSize(size)">
+                {{ size }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Color Palette -->
+          <div class="attribute-box" *ngIf="product.color">
+            <span class="attr-label">Color Profile</span>
+            <div class="color-preview">
+              <span class="color-swatch" [style.background-color]="product.color || '#111E38'"></span>
+              <span class="color-name">{{ product.color || 'Standard Navy' }}</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="product-details-card">
+
+          <!-- Category / Tags -->
+          <div class="meta-row">
+            <span class="section-badge"> <b>{{ product.gender }} • {{ product.collection }}</b> </span>
+            <span class="model-tag">Ref: {{ product.model }}</span>
+          </div>
+
+          <h1 class="product-title">{{ product.name }}</h1>
+
+          <!-- Price Display -->
+          <div class="price-row">
+            <span class="current-price">₹{{ product.selling_price || product.listing_price }}</span>
+            <span class="original-price" *ngIf="product.selling_price && product.listing_price > product.selling_price">
+              ₹{{ product.listing_price }} </span>
+            <span class="discount-badge" *ngIf="product.selling_price && product.listing_price > product.selling_price">
+              OFFER </span>
+          </div>
+
+
+          <!-- Description -->
+          <div class="accordion-details-container">
+
+
+            <!-- 1. Description & Fit -->
+            <div class="detail-section">
+              <div class="attr-label" (click)="toggleSection('description')"
+                [class.active]="openSection === 'description'">
+                Description & Fit <i class="mdi" [ngClass]="openSection === 'description' ? 'mdi-chevron-up' : 'mdi-chevron-down'"></i>
+              </div>
+              <div class="detail-content" *ngIf="openSection === 'description'">
+                <p class="product-description mb-0">{{ product.pro_desc }}</p>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="attr-label" (click)="toggleSection('highlights')"
+                [class.active]="openSection === 'highlights'">
+                Key Highlights <i class="mdi" [ngClass]="openSection === 'highlights' ? 'mdi-chevron-up' : 'mdi-chevron-down'"></i>
+              </div>
+              @if (product.category === 'upper') {
+              <div class="detail-content" *ngIf="openSection === 'highlights'">
+                <p class="product-description mb-0">{{ product.sleeve_type }}</p>
+                <p class="product-description mb-0">{{ product.neck_type }}</p>
+                <p class="product-description mb-0">{{ product.cloth_type }}</p>
+              </div>
+              }
+              @if (product.category === 'lower') {
+              <div class="detail-content" *ngIf="openSection === 'highlights'">
+                <p class="product-description mb-0">{{ product.fit_type }}</p>
+                <p class="product-description mb-0">{{ product.cloth_type }}</p>
+              </div>
+              }
+
+            </div>
+
+            <!-- 2. Return Policy -->
+            <div class="detail-section">
+              <div class="attr-label" (click)="toggleSection('return')" [class.active]="openSection === 'return'">
+                Return Policy <i class="mdi" [ngClass]="openSection === 'return' ? 'mdi-chevron-up' : 'mdi-chevron-down'"></i>
+              </div>
+              <div class="detail-content" *ngIf="openSection === 'return'">
+                <p class="product-description mb-0" style="white-space: pre-line;">{{ product.return_policy }}</p>
+              </div>
+            </div>
+
+            <!-- 3. Shipping -->
+            <div class="detail-section">
+              <div class="attr-label" (click)="toggleSection('shipping')" [class.active]="openSection === 'shipping'">
+                Shipping <i class="mdi" [ngClass]="openSection === 'shipping' ? 'mdi-chevron-up' : 'mdi-chevron-down'"></i>
+              </div>
+              <div class="detail-content" *ngIf="openSection === 'shipping'">
+                <p class="product-description mb-0" style="white-space: pre-line;">{{ product.shipping_policy }}</p>
+              </div>
+            </div>
+
+            <!-- 4. Care -->
+            <div class="detail-section">
+              <div class="attr-label" (click)="toggleSection('care')" [class.active]="openSection === 'care'">
+                Care <i class="mdi" [ngClass]="openSection === 'care' ? 'mdi-chevron-up' : 'mdi-chevron-down'"></i>
+              </div>
+              <div class="detail-content" *ngIf="openSection === 'care'">
+                <p class="product-description mb-0">{{ product.care_policy }}</p>
+              </div>
+            </div>
+
+          </div>
+
+
+
+
+          <!-- Interactive Quantity Control -->
+          <div class="quantity-row">
+            <span class="attr-label">Quantity</span>
+            <div class="quantity-picker">
+              <button type="button" class="qty-btn" (click)="decreaseQty()">-</button>
+              <input type="text" class="qty-input" [value]="quantity" readonly>
+              <button type="button" class="qty-btn" (click)="increaseQty()">+</button>
+            </div>
+          </div>
+
+<!-- Total Calculation & CTA -->
+<div class="action-footer">
+  <div class="total-row">
+    <span class="total-label">Total Payable:</span>
+    <span class="total-price">₹{{ totalPrice }}</span>
+  </div>
+  
+  <div class="row button-group">
+    <div class="col">
+      <button class="btn btn-add-to-cart" (click)="addToCart()">
+        <i class="fa fa-shopping-bag"></i> 
+        {{ checkCartlist(product.id) ? 'In Bag ✓' : 'Add to Bag' }}
+      </button>
+    </div>
+    <div class="col">
+      <button class="btn btn-buy-now" (click)="buynow()">
+        <i class="fa fa-bolt"></i> Buy Now
+      </button>
+    </div>
+  </div>
+</div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- RELATED PRODUCTS HEADLINE -->
+<section class="related-products-section">
+  <div class="container text-center">
+    <span class="section-badge">CURATED FOR YOU</span>
+    <h2 class="related-title">You May Also Like</h2>
+  </div>
+</section>
+
+
+
+
+
+<!-- ===== PASTE AT THE VERY BOTTOM of single-product.html (after the related-products section) ===== -->
+
+<!-- Checkout: delivery details + pay -->
+<div class="ca-overlay" *ngIf="showCheckout && product" (click)="closeCheckout()">
+  <div class="ca-sheet" role="dialog" aria-modal="true" aria-labelledby="ca-checkout-title" (click)="$event.stopPropagation()">
+
+    <div class="ca-sheet-head">
+      <h2 id="ca-checkout-title">Delivery details</h2>
+      <button type="button" class="ca-close" (click)="closeCheckout()" [disabled]="isPaying" aria-label="Close">&times;</button>
+    </div>
+
+    <!-- Order summary -->
+    <div class="ca-summary">
+      <img [src]="imageURL + product.imagesPath?.[0]" [alt]="product.name">
+      <div class="ca-summary-text">
+        <strong>{{ product.name }}</strong>
+        <span>Size {{ selectedSize || '-' }} &nbsp;|&nbsp; Qty {{ quantity }}</span>
+      </div>
+      <strong class="ca-summary-price">₹{{ totalPrice }}</strong>
+    </div>
+
+    <div class="ca-error" *ngIf="errorMsg" role="alert">{{ errorMsg }}</div>
+
+    <form [formGroup]="checkoutForm" (ngSubmit)="payNow()" novalidate>
+      <div class="ca-grid">
+
+        <label class="ca-field ca-full">
+          <span>Full name</span>
+          <input type="text" formControlName="fullName" autocomplete="name">
+          <small *ngIf="f['fullName'].touched && f['fullName'].invalid">Enter your full name</small>
+        </label>
+
+        <label class="ca-field">
+          <span>Mobile number</span>
+          <input type="tel" inputmode="numeric" maxlength="10" formControlName="phone" autocomplete="tel-national">
+          <small *ngIf="f['phone'].touched && f['phone'].invalid">Enter a 10-digit mobile number</small>
+        </label>
+
+        <label class="ca-field">
+          <span>Email</span>
+          <input type="email" formControlName="email" autocomplete="email">
+          <small *ngIf="f['email'].touched && f['email'].invalid">Enter a valid email</small>
+        </label>
+
+        <label class="ca-field ca-full">
+          <span>Address line 1</span>
+          <input type="text" formControlName="line1" autocomplete="address-line1">
+          <small *ngIf="f['line1'].touched && f['line1'].invalid">Enter house no. and street</small>
+        </label>
+
+        <label class="ca-field ca-full">
+          <span>Address line 2 (optional)</span>
+          <input type="text" formControlName="line2" autocomplete="address-line2">
+        </label>
+
+        <label class="ca-field">
+          <span>City</span>
+          <input type="text" formControlName="city" autocomplete="address-level2">
+          <small *ngIf="f['city'].touched && f['city'].invalid">Enter your city</small>
+        </label>
+
+        <label class="ca-field">
+          <span>State</span>
+          <input type="text" formControlName="state" autocomplete="address-level1">
+          <small *ngIf="f['state'].touched && f['state'].invalid">Enter your state</small>
+        </label>
+
+        <label class="ca-field">
+          <span>Pincode</span>
+          <input type="text" inputmode="numeric" maxlength="6" formControlName="pincode" autocomplete="postal-code">
+          <small *ngIf="f['pincode'].touched && f['pincode'].invalid">Enter a 6-digit pincode</small>
+        </label>
+
+      </div>
+
+      <button type="submit" class="ca-pay" [disabled]="isPaying">
+        {{ isPaying ? 'Processing...' : 'Pay ₹' + totalPrice }}
+      </button>
+      <p class="ca-note">You'll pay securely with UPI, card, netbanking or wallet.</p>
+    </form>
+  </div>
+</div>
+
+<!-- Order confirmation -->
+<div class="ca-overlay" *ngIf="orderSuccess" (click)="closeSuccess()">
+  <div class="ca-sheet ca-success" role="dialog" aria-modal="true" aria-labelledby="ca-success-title" (click)="$event.stopPropagation()">
+    <h2 id="ca-success-title">Order placed</h2>
+    <p>We've received your payment of <strong>₹{{ orderSuccess.amount }}</strong> and will email you the shipping details.</p>
+    <dl>
+      <dt>Order ID</dt><dd>{{ orderSuccess.id }}</dd>
+      <dt>Payment ID</dt><dd>{{ orderSuccess.paymentId }}</dd>
+    </dl>
+    <button type="button" class="ca-pay" (click)="closeSuccess()">Continue shopping</button>
+  </div>
+</div>

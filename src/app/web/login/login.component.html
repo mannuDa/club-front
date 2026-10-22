@@ -1,0 +1,181 @@
+<section class="auth-section">
+  <div class="auth-container">
+    
+    <!-- HEADER / BRANDING -->
+    <div class="auth-header text-center">
+      <span class="section-badge">CLUB AVIS</span>
+      <h2 class="auth-title">{{ isLoginView ? 'Welcome Back' : 'Create Account' }}</h2>
+      <p class="auth-subtitle">
+        {{ isLoginView ? 'Access your orders, wishlist & exclusive benefits' : 'Join us for a bespoke shopping experience' }}
+      </p>
+    </div>
+
+    <!-- ERROR ALERT -->
+    <div *ngIf="errorMessage" class="alert-error-box">
+      <span>⚠️ {{ errorMessage }}</span>
+      <button type="button" class="close-btn" (click)="errorMessage = null">&times;</button>
+    </div>
+
+    <!-- SUCCESS ALERT -->
+    <div *ngIf="successMessage" class="alert-success-box" style="background-color: #d4edda; color: #155724; padding: 12px; margin-bottom: 20px; border-radius: 6px;">
+      <span>✅ {{ successMessage }}</span>
+      <button type="button" class="close-btn" (click)="successMessage = null">&times;</button>
+    </div>
+
+    <!-- TOGGLE TABS -->
+    <div class="auth-tabs">
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active-tab]="isLoginView" 
+        (click)="toggleView(true)">
+        Sign In
+      </button>
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active-tab]="!isLoginView" 
+        (click)="toggleView(false)">
+        Register
+      </button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form *ngIf="isLoginView" (ngSubmit)="onLogin()" #loginForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label class="form-label">Email Address / Phone</label>
+        <input 
+          type="email" 
+          class="form-control" 
+          name="email" 
+          [(ngModel)]="loginData.email" 
+          placeholder="name@domain.com" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <div class="d-flex justify-content-between align-items-center">
+          <label class="form-label">Password</label>
+          <a href="javascript:void(0)" class="forgot-link">Forgot?</a>
+        </div>
+        
+        <div class="password-field-wrapper">
+          <input 
+            [type]="showLoginPassword ? 'text' : 'password'" 
+            class="form-control" 
+            name="password" 
+            [(ngModel)]="loginData.password" 
+            placeholder="••••••••" 
+            required>
+          <button 
+            type="button" 
+            class="toggle-password-btn" 
+            (click)="showLoginPassword = !showLoginPassword">
+            {{ showLoginPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="!loginForm.valid || isLoading">
+        {{ isLoading ? 'Processing...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form *ngIf="!isLoginView" (ngSubmit)="onRegister()" #registerForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          name="fullName" 
+          [(ngModel)]="registerData.name" 
+          placeholder="John Doe" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          class="form-control" 
+          name="regEmail" 
+          [(ngModel)]="registerData.email" 
+          placeholder="name@domain.com" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mobile Number</label>
+        <input 
+          type="tel" 
+          class="form-control" 
+          name="mobile" 
+          [(ngModel)]="registerData.contact" 
+          placeholder="+91 98765 43210" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="password-field-wrapper">
+          <input 
+            [type]="showRegisterPassword ? 'text' : 'password'" 
+            class="form-control" 
+            name="regPassword" 
+            [(ngModel)]="registerData.password" 
+            placeholder="Create strong password" 
+            required>
+          <button 
+            type="button" 
+            class="toggle-password-btn" 
+            (click)="showRegisterPassword = !showRegisterPassword">
+            {{ showRegisterPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="password-field-wrapper">
+          <input 
+            [type]="showConfirmPassword ? 'text' : 'password'" 
+            class="form-control" 
+            [class.input-error]="confirmPassword && registerData.password !== confirmPassword"
+            name="confirmPassword" 
+            [(ngModel)]="confirmPassword" 
+            placeholder="Re-enter password" 
+            required>
+          <button 
+            type="button" 
+            class="toggle-password-btn" 
+            (click)="showConfirmPassword = !showConfirmPassword">
+            {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <span 
+          class="error-text" 
+          *ngIf="confirmPassword && registerData.password !== confirmPassword">
+          Passwords do not match
+        </span>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="!registerForm.valid || isPasswordMismatch || isLoading">
+        {{ isLoading ? 'Registering...' : 'Create Account' }}
+      </button>
+    </form>
+
+    <!-- FOOTER TOGGLE PROMPT -->
+    <div class="auth-footer text-center">
+      <p *ngIf="isLoginView">
+        Don't have an account? 
+        <a href="javascript:void(0)" (click)="toggleView(false)" class="toggle-link">Register Now</a>
+      </p>
+      <p *ngIf="!isLoginView">
+        Already registered? 
+        <a href="javascript:void(0)" (click)="toggleView(true)" class="toggle-link">Sign In Here</a>
+      </p>
+    </div>
+
+  </div>
+</section>

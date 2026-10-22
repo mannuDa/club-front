@@ -1,0 +1,651 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+        <h5 class="card-title mb-0">Cloths Data</h5>
+
+        <div class="d-flex align-items-center gap-2">
+
+          <!-- Selected Count -->
+          <span *ngIf="selectedProducts.length > 0" class="badge bg-light text-primary border px-3 py-2">
+            {{ selectedProducts.length }} Selected
+          </span>
+
+          <!-- Apply Discount -->
+          <button *ngIf="selectedProducts.length > 0"
+            class="btn btn-warning shadow-sm d-flex align-items-center gap-1 px-3" type="button"
+            (click)="openDiscountModal()">
+            <i class="mdi mdi-percent fs-18"></i>
+            <span class="fw-semibold">Apply Discount</span>
+          </button>
+
+          <!-- Add Product -->
+          <button class="btn btn-primary shadow-sm d-flex align-items-center gap-1 px-3 py-1.5" (click)="openModal()"
+            type="button">
+            <i class="mdi mdi-plus fs-18"></i>
+            <span class="fw-semibold">Add Products</span>
+          </button>
+
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div class="table-responsive">
+
+          <table id="datatable" class="table table-bordered table-hover align-middle nowrap w-100">
+
+            <thead class="table-light">
+              <tr>
+
+                <!-- Select All -->
+                <th class="text-center" style="width: 50px;">
+                  <input type="checkbox" class="form-check-input" title="Select all on this page" [checked]="isAllSelected()"
+                    [indeterminate]="isSomeSelected()" (change)="toggleSelectAll($event)">
+                </th>
+
+                <th>S.no</th>
+                <th>Name</th>
+                <th>Model & Color</th>
+                <th>Pricing</th>
+                <th>Discount</th>
+                <th>Collection & Gender</th>
+                <th>Sizes Available</th>
+                <th class="text-center">Actions</th>
+
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr *ngFor="let product of pageData.items; let i = index">
+
+                <!-- Single Select -->
+                <td class="text-center">
+
+                  <input type="checkbox" class="form-check-input" [checked]="isSelected(product.id)"
+                    (change)="toggleProductSelection(product, $event)">
+
+                </td>
+
+                <!-- S.No -->
+                <td class="fw-medium">
+                  {{ pageData.startIndex + i + 1 }}
+                </td>
+
+                <!-- Name -->
+                <td class="fw-medium">
+                  {{ product.name }}
+                </td>
+
+                <!-- Model & Color -->
+                <td>
+                  <div>{{ product.model }}</div>
+
+                  <div class="d-flex align-items-center gap-2 mt-1">
+                    <small class="text-muted">Color:</small>
+
+                    <span class="color-box border rounded-circle" [style.background-color]="product.color || '#ccc'">
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Pricing -->
+                <td>
+
+                  <div class="text-success fw-bold">
+                    Selling: ₹{{ product.selling_price }}
+                  </div>
+
+                  <div class="text-muted fs-12 text-decoration-line-through" *ngIf="product.listing_price">
+
+                    MRP: ₹{{ product.listing_price }}
+
+                  </div>
+
+                </td>
+                <!-- discount -->
+                <td>
+
+                  <div class="text-success fw-bold">
+                    Discount: {{ product.discount }}%
+                  </div>
+
+                </td>
+
+                <!-- Collection & Gender -->
+                <td>
+
+                  <span class="badge bg-light text-dark border">
+                    {{ product.collection }}
+                  </span>
+
+                  &
+
+                  <span class="badge bg-light text-dark border">
+                    {{ product.gender }}
+                  </span>
+
+                </td>
+
+                <!-- Sizes -->
+                <td>
+
+                  <ng-container *ngIf="product.sizes?.length; else noSizes">
+
+                    <span *ngFor="let size of product.sizes"
+                      class="badge rounded-pill bg-light text-dark border me-1 mb-1">
+
+                      {{ size }}
+
+                    </span>
+
+                  </ng-container>
+
+                  <ng-template #noSizes>
+                    <span class="text-muted">
+                      N/A
+                    </span>
+                  </ng-template>
+
+                </td>
+
+                <!-- Actions -->
+                <td class="text-center">
+
+                  <div class="d-flex justify-content-center gap-2">
+
+                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center"
+                      (click)="openModal(product)" title="Edit">
+
+                      <i class="mdi mdi-square-edit-outline fs-16"></i>
+
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
+                      (click)="onDeleteProduct(product.id, pageData.startIndex + i)" title="Delete">
+
+                      <i class="mdi mdi-delete-outline fs-16"></i>
+
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+              <!-- Empty State -->
+              <tr *ngIf="!allCloths || allCloths.length === 0">
+
+                <td colspan="8" class="text-center py-4 text-muted">
+
+                  No products available.
+                  Click <strong>Add Products</strong> to create one.
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <!-- Pagination -->
+        <div class="pg-bar" *ngIf="pageData.totalItems > 0">
+          <div class="pg-summary">
+            Showing <strong>{{ pageData.from }}</strong> to <strong>{{ pageData.to }}</strong>
+            of <strong>{{ pageData.totalItems }}</strong> products
+          </div>
+
+          <div class="d-flex align-items-center flex-wrap gap-3">
+            <label class="pg-size mb-0">
+              <span>Rows per page</span>
+              <select class="form-select form-select-sm" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+                <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+              </select>
+            </label>
+
+            <nav aria-label="Product pages" *ngIf="pageData.totalPages > 1">
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" [class.disabled]="!pageData.hasPrev">
+                  <button type="button" class="page-link" aria-label="Previous page" [disabled]="!pageData.hasPrev"
+                    (click)="goToPage(pageData.page - 1)">
+                    <i class="mdi mdi-chevron-left"></i>
+                  </button>
+                </li>
+
+                <li class="page-item" *ngFor="let p of pageData.pages" [class.active]="p === pageData.page"
+                  [class.disabled]="p === '...'">
+                  <button type="button" class="page-link" [disabled]="p === '...'"
+                    [attr.aria-current]="p === pageData.page ? 'page' : null" (click)="goToPage(p)">
+                    {{ p }}
+                  </button>
+                </li>
+
+                <li class="page-item" [class.disabled]="!pageData.hasNext">
+                  <button type="button" class="page-link" aria-label="Next page" [disabled]="!pageData.hasNext"
+                    (click)="goToPage(pageData.page + 1)">
+                    <i class="mdi mdi-chevron-right"></i>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="discountModalLabel"> Apply Discount </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"> </button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="alert alert-light border">
+          <strong>{{ selectedProducts.length }}</strong> products selected
+        </div>
+
+        <div class="mb-3">
+
+          <label class="form-label fw-semibold">
+            Discount Type
+          </label>
+
+          <select class="form-select" [(ngModel)]="discountType">
+
+            <option value="percentage">
+              Percentage (%)
+            </option>
+
+            <option value="fixed">
+              Fixed Amount (₹)
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="mb-3">
+
+          <label class="form-label fw-semibold">
+            Discount Value
+          </label>
+
+          <div class="input-group">
+
+            <input type="number" class="form-control" [(ngModel)]="discountValue" min="0" placeholder="Enter discount">
+
+            <span class="input-group-text">
+              {{ discountType === 'percentage' ? '%' : '₹' }}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal"> Cancel </button>
+
+        <button type="button" class="btn btn-primary" (click)="applyDiscount()">
+
+          <i class="mdi mdi-percent me-1"></i>
+          Apply Discount
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- Add / update product modal -->
+<div class="modal fade premium-modal" id="UpdateclothModal" tabindex="-1" role="dialog"
+  aria-labelledby="clothModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header pm-header">
+        <div>
+          <h5 class="modal-title pm-title" id="clothModalTitle">
+            {{ isEditMode ? 'Update product' : 'Add new product' }}
+          </h5>
+          <p class="pm-subtitle mb-0">
+            {{ isEditMode ? 'Review the details and save your changes.' : 'Fill in the details, then add photos on the right.' }}
+          </p>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="closeModalBtn"
+          aria-label="Close"></button>
+      </div>
+
+      <form [formGroup]="createForm" (ngSubmit)="saveCloth()">
+        <div class="modal-body p-0">
+          <div class="row g-0">
+
+            <!-- Left: product details -->
+            <div class="col-lg-8">
+              <div class="pm-form">
+
+                <!-- Basic information -->
+                <section class="pm-section">
+                  <header class="pm-section-head">
+                    <i class="mdi mdi-tag-text-outline"></i>
+                    <h6>Basic information</h6>
+                  </header>
+
+                  <div class="row g-3">
+                    <div class="col-md-8">
+                      <label class="form-label req">Product name</label>
+                      <input type="text" class="form-control" formControlName="name"
+                        [class.is-invalid]="isInvalid('name')" placeholder="e.g. Vintage Denim Jacket">
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label req">Model / SKU</label>
+                      <input type="text" class="form-control" formControlName="model"
+                        [class.is-invalid]="isInvalid('model')" placeholder="MOD-1092">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label req">Collection</label>
+                      <select class="form-select" formControlName="collection"
+                        [class.is-invalid]="isInvalid('collection')">
+                        <option value="" disabled>Choose a collection</option>
+                        <option value="All">All Season</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Winter">Winter</option>
+                        <option value="Autumn">Autumn</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label req">Fashion type</label>
+                      <select class="form-select" formControlName="fashionType"
+                        [class.is-invalid]="isInvalid('fashionType')">
+                        <option value="" disabled>Choose a fashion type</option>
+                        <option value="Street Fashion">Street Fashion</option>
+                        <option value="Limited Fashion">Limited Edition</option>
+                        <option value="Elite Fashion">Elite Fashion</option>
+                      </select>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Classification -->
+                <section class="pm-section">
+                  <header class="pm-section-head">
+                    <i class="mdi mdi-hanger"></i>
+                    <h6>Category and fit</h6>
+                  </header>
+
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label class="form-label req">Category</label>
+                      <select class="form-select" formControlName="category" (change)="onCategoryChange($event)"
+                        [class.is-invalid]="isInvalid('category')">
+                        <option value="" disabled>Choose a category</option>
+                        <option value="upper">Upperwear</option>
+                        <option value="lower">Lowerwear</option>
+                      </select>
+                    </div>
+
+                    <ng-container *ngIf="selectedCategory; else pickCategoryHint">
+
+                      <!-- gstyle: garment type -->
+                      <div class="col-md-4">
+                        <label class="form-label req">Garment type</label>
+                        <select class="form-select" formControlName="gstyle" (change)="onGarmentTypeChange($event)"
+                          [class.is-invalid]="isInvalid('gstyle')">
+                          <option value="" disabled>Select a garment type</option>
+                          <option *ngFor="let item of garmentOptions" [value]="item.name">{{ item.name }}</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-4">
+                        <label class="form-label req">Subtype</label>
+                        <select class="form-select" formControlName="subtypes"
+                          [class.is-invalid]="isInvalid('subtypes')">
+                          <option value="" disabled>
+                            {{ availableSubtypes.length ? 'Select a subtype' : 'Pick a garment type first' }}
+                          </option>
+                          <option *ngFor="let sub of availableSubtypes" [value]="sub">{{ sub }}</option>
+                        </select>
+                      </div>
+
+                      <div [ngClass]="selectedCategory === 'upper' ? 'col-md-3' : 'col-md-6'">
+                        <label class="form-label">Fit type</label>
+                        <input type="text" class="form-control" formControlName="fit_type" placeholder="e.g. Slim">
+                      </div>
+
+                      <div [ngClass]="selectedCategory === 'upper' ? 'col-md-3' : 'col-md-6'">
+                        <label class="form-label">Cloth type</label>
+                        <input type="text" class="form-control" formControlName="cloth_type" placeholder="e.g. Cotton">
+                      </div>
+
+                      <div class="col-md-3" *ngIf="selectedCategory === 'upper'">
+                        <label class="form-label">Neckline</label>
+                        <input type="text" class="form-control" formControlName="neck_type" placeholder="e.g. Crew">
+                      </div>
+
+                      <div class="col-md-3" *ngIf="selectedCategory === 'upper'">
+                        <label class="form-label">Sleeves</label>
+                        <input type="text" class="form-control" formControlName="sleeve_type" placeholder="e.g. Short">
+                      </div>
+
+                      <!-- Sizes -->
+                      <div class="col-12">
+                        <label class="form-label req d-block">Available sizes</label>
+                        <div class="d-flex flex-wrap gap-2">
+                          <button type="button" *ngFor="let size of clothsSizes" class="size-chip"
+                            [class.is-selected]="isSizeSelected(size)" [attr.aria-pressed]="isSizeSelected(size)"
+                            (click)="toggleSize(size)">
+                            {{ size }}
+                          </button>
+                        </div>
+                        <div class="pm-error" *ngIf="isInvalid('sizes')">Select at least one size.</div>
+                      </div>
+
+                    </ng-container>
+
+                    <ng-template #pickCategoryHint>
+                      <div class="col-md-8 d-flex align-items-end">
+                        <div class="pm-hint w-100">
+                          <i class="mdi mdi-information-outline"></i>
+                          Choose a category to set the garment type, subtype and sizes.
+                        </div>
+                      </div>
+                    </ng-template>
+                  </div>
+                </section>
+
+                <!-- Appearance -->
+                <section class="pm-section">
+                  <header class="pm-section-head">
+                    <i class="mdi mdi-palette-outline"></i>
+                    <h6>Colour and gender</h6>
+                  </header>
+
+                  <div class="row g-3">
+                    <div class="col-md-5">
+                      <label class="form-label">Primary color</label>
+                      <div class="color-field">
+                        <input type="color" class="color-swatch" [(ngModel)]="selectedColor"
+                          [ngModelOptions]="{standalone: true}" aria-label="Primary color">
+                        <span class="color-hex">{{ selectedColor || '#000000' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="col-md-7">
+                      <label class="form-label d-block">Gender</label>
+                      <div class="segmented" role="group" aria-label="Gender">
+                        <input type="radio" class="btn-check" name="gender" id="male" value="male"
+                          [(ngModel)]="selectedGender" [ngModelOptions]="{standalone: true}">
+                        <label class="seg-label" for="male"><i class="mdi mdi-gender-male"></i>Male</label>
+
+                        <input type="radio" class="btn-check" name="gender" id="female" value="female"
+                          [(ngModel)]="selectedGender" [ngModelOptions]="{standalone: true}">
+                        <label class="seg-label" for="female"><i class="mdi mdi-gender-female"></i>Female</label>
+
+                        <input type="radio" class="btn-check" name="gender" id="unisex" value="unisex"
+                          [(ngModel)]="selectedGender" [ngModelOptions]="{standalone: true}">
+                        <label class="seg-label" for="unisex"><i class="mdi mdi-gender-male-female"></i>Unisex</label>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Pricing -->
+                <section class="pm-section">
+                  <header class="pm-section-head">
+                    <i class="mdi mdi-currency-inr"></i>
+                    <h6>Pricing</h6>
+                  </header>
+
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label class="form-label req">Listing price (MRP)</label>
+                      <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" formControlName="listing_price" min="0"
+                          [class.is-invalid]="isInvalid('listing_price')" placeholder="0.00">
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label req">Selling price</label>
+                      <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" formControlName="selling_price" min="0"
+                          [class.is-invalid]="isInvalid('selling_price')" placeholder="0.00">
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Discount</label>
+                      <div class="discount-readout" [class.is-active]="discountPercent !== null">
+                        {{ discountPercent !== null ? discountPercent + '% off' : 'Not set' }}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Descriptions -->
+                <section class="pm-section">
+                  <header class="pm-section-head">
+                    <i class="mdi mdi-text-box-outline"></i>
+                    <h6>Description and policies</h6>
+                  </header>
+
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Product description</label>
+                      <textarea formControlName="pro_desc" class="form-control" rows="4"
+                        placeholder="Describe the fabric, finish and styling..."></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Return policy</label>
+                      <textarea formControlName="return_policy" class="form-control" rows="4"
+                        placeholder="Specify return terms..."></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Shipping instructions</label>
+                      <textarea formControlName="shipping_policy" class="form-control" rows="4"
+                        placeholder="Specify shipping terms..."></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Care instructions</label>
+                      <textarea formControlName="care_policy" class="form-control" rows="4"
+                        placeholder="Wash, dry and iron guidance..."></textarea>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+
+            <!-- Right: media -->
+            <aside class="col-lg-4 pm-media">
+              <div class="pm-media-inner">
+
+                <header class="pm-section-head">
+                  <i class="mdi mdi-image-multiple-outline"></i>
+                  <h6>Product photos</h6>
+                </header>
+
+                <div class="upload-dropzone" role="button" tabindex="0" (drop)="onDrop($event)"
+                  (dragover)="allowDrop($event)" (click)="fileInput.click()" (keydown.enter)="fileInput.click()">
+                  <span class="dz-icon"><i class="mdi mdi-cloud-upload-outline"></i></span>
+                  <p class="dz-title">Drop photos here</p>
+                  <p class="dz-hint">or click to browse. Up to 2 MB each.</p>
+                  <input #fileInput type="file" class="d-none" multiple accept="image/*"
+                    (click)="$event.stopPropagation(); resetFileInput()" (change)="onFilesSelected($event)">
+                </div>
+
+                <div *ngIf="fileSizeError.length > 0" class="alert alert-danger alert-dismissible fade show mt-3 p-2 small"
+                  role="alert">
+                  <i class="mdi mdi-alert-circle me-1"></i>
+                  <ul class="mb-0 ps-3">
+                    <li *ngFor="let err of fileSizeError">{{ err }}</li>
+                  </ul>
+                  <button type="button" class="btn-close p-2" (click)="fileSizeError = []" aria-label="Close"></button>
+                </div>
+
+                <!-- Previews (works for saved images and new uploads) -->
+                <div class="pm-previews" *ngIf="imagePreviews && imagePreviews.length">
+                  <div class="pm-thumb" *ngFor="let img of imagePreviews; let i = index">
+                    <img [src]="img.startsWith('data:') || img.startsWith('blob:') ? img : (imageURL + img)"
+                      [alt]="'Product photo ' + (i + 1)">
+                    <button type="button" class="pm-thumb-remove" aria-label="Remove photo"
+                      (click)="removeImage(i); $event.stopPropagation()">
+                      <i class="mdi mdi-close"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <p class="pm-photo-count" *ngIf="imagePreviews && imagePreviews.length">
+                  {{ imagePreviews.length }} {{ imagePreviews.length === 1 ? 'photo' : 'photos' }} added
+                </p>
+
+              </div>
+            </aside>
+
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer pm-footer">
+          <span class="pm-required-note me-auto"><span class="req-star">*</span> Required fields</span>
+          <button type="button" class="btn pm-btn-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn pm-btn-gold">
+            {{ isEditMode ? 'Save changes' : 'Add product' }}
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,164 @@
+
+
+/* BANNER WITH BACKGROUND IMAGE */
+.contact-page-heading {
+  position: relative;
+  margin-top: 80px;
+  padding: 5rem 1rem;
+  background-image: url('../assets/images/about-us-page-heading.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.contact-page-heading .banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 30, 56, 0.75); /* Dark Navy Overlay */
+  z-index: 1;
+}
+
+.contact-page-heading .inner-content {
+  position: relative;
+  z-index: 2;
+}
+
+.contact-page-heading .sub-heading {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2.5px;
+  color: #C19A6B; /* Warm Gold */
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.contact-page-heading .main-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.8rem;
+  color: #FFFFFF;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.contact-page-heading .banner-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #E2E8F0;
+  margin: 0 auto;
+}
+
+/* SECTION STRUCTURE */
+.privacy-section {
+  background-color: #FAF8F5;
+  padding: 4rem 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* STICKY SIDEBAR */
+.privacy-sidebar {
+  position: sticky;
+  top: 100px;
+  background: #FFFFFF;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #EAE3D9;
+  box-shadow: 0 4px 12px rgba(17, 30, 56, 0.04);
+}
+
+.sidebar-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  color: #111E38;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #F3EFEA;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links li {
+  margin-bottom: 0.6rem;
+}
+
+.sidebar-links a {
+  text-decoration: none;
+  font-size: 0.8rem;
+  color: #666666;
+  transition: all 0.2s ease;
+  display: block;
+  line-height: 1.4;
+}
+
+.sidebar-links a:hover {
+  color: #C19A6B;
+  padding-left: 4px;
+}
+
+/* CONTENT CARD */
+.privacy-card {
+  background: #FFFFFF;
+  padding: 3rem;
+  border-radius: 16px;
+  border: 1px solid #EAE3D9;
+  box-shadow: 0 6px 18px rgba(17, 30, 56, 0.04);
+}
+
+.policy-block {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 110px;
+}
+
+.policy-block h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.35rem;
+  color: #111E38;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.policy-block p {
+  font-size: 0.88rem;
+  color: #555555;
+  line-height: 1.7;
+  margin-bottom: 0.8rem;
+}
+
+.custom-bullet-list {
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.custom-bullet-list li {
+  font-size: 0.88rem;
+  color: #555555;
+  line-height: 1.6;
+  margin-bottom: 0.4rem;
+}
+
+.custom-bullet-list li strong {
+  color: #111E38;
+}
+
+/* HIGHLIGHTED SECTION */
+.highlight-contact {
+  background: #F3EFEA;
+  padding: 1.8rem;
+  border-radius: 12px;
+  border-left: 4px solid #C19A6B;
+  margin-bottom: 0;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .privacy-card {
+    padding: 1.5rem;
+  }
+  .contact-page-heading .main-title {
+    font-size: 2.2rem;
+  }
+}

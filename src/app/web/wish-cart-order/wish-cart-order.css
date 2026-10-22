@@ -1,0 +1,47 @@
+.account-tabs-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 30px;
+  border-bottom: 2px solid #eaeaea;
+  margin-bottom: 30px;
+}
+
+.tabs-nav button {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #777;
+  padding: 10px 4px 14px 4px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.tabs-nav button:hover {
+  color: #111;
+}
+
+.tabs-nav button.active {
+  color: #111;
+  font-weight: 600;
+}
+
+.tabs-nav button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #111;
+}
+
+.tabs-content {
+  width: 100%;
+}

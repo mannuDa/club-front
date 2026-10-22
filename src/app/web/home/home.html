@@ -1,0 +1,488 @@
+<!-- ***** Main Banner Area Start ***** -->
+<main class="home-page">
+
+<section class="hero-section" *ngIf="slides.length > 0">
+  <div class="hero-content" *ngFor="let slide of [slides[currentSlide]]; ">
+    <span class="sub-title">{{ slide.subTitle }}</span>
+    <h1 class="hero-title" [innerHTML]="slide.title"></h1>
+
+    <div class="divider">
+      <img src="assets/circle-logo-trans.png" alt="Club Avis Logo" class="bird-icon">
+    </div>
+
+    <p class="hero-description" [innerHTML]="slide.description"></p>
+
+    <button class="shop-btn">
+      SHOP NOW
+      <span class="arrow">&rarr;</span>
+    </button>
+  </div>
+
+  <div class="hero-image-wrapper" *ngFor="let slide of [slides[currentSlide]]">
+    <img [src]="slide.image" alt="Model wearing clothes" class="hero-img">
+
+    <div class="circular-seal">
+      <svg viewBox="0 0 100 100" class="seal-svg">
+        <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+        <text font-size="8.5" letter-spacing="2" fill="#111E38">
+          <textPath href="#circlePath">{{ slide.sealText }}</textPath>
+        </text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Optional: Dots Indicator (Neeche dots dikhane ke liye agar chaho toh) -->
+  <div class="slide-dots">
+    <span *ngFor="let s of slides; let i = index" 
+          [class.active]="i === currentSlide" 
+          (click)="currentSlide = i">
+    </span>
+  </div>
+</section>
+  <!-- FEATURES BAR -->
+  <section class="features-bar">
+    <div class="feature-item">
+      <div class="feature-icon">🪶</div>
+      <div>
+        <h4>PREMIUM QUALITY</h4>
+        <p>Finest fabrics for ultimate comfort.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🍃</div>
+      <div>
+        <h4>TIMELESS DESIGNS</h4>
+        <p>Styles that never go out of fashion.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🛡️</div>
+      <div>
+        <h4>PERFECT FIT</h4>
+        <p>Tailored to give you the perfect look.</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🛍️</div>
+      <div>
+        <h4>EASY RETURNS</h4>
+        <p>Hassle-free returns within 7 days.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BESTSELLERS SECTION -->
+  <section class="bestsellers">
+    <div class="section-title">
+      <span class="sub-heading">EXPLORE COLLECTIONS</span>
+      <h2>Our Bestsellers</h2>
+    </div>
+
+<section id="bestsellers" class="bestsellers-dark-section">
+  <div class="bestsellers-container">
+
+    <!-- Category tabs -->
+    <div class="bestsellers-tabs" role="tablist" aria-label="Bestseller categories">
+      <button type="button" class="bs-tab" role="tab" [class.active]="activeCategory === 'all'"
+        [attr.aria-selected]="activeCategory === 'all'" (click)="filterBestsellers('all')">
+        All Pieces
+      </button>
+
+      <button type="button" class="bs-tab" role="tab" [class.active]="activeCategory === 'Street Fashion'"
+        [attr.aria-selected]="activeCategory === 'Street Fashion'" (click)="filterBestsellers('Street Fashion')">
+        Streetwear
+      </button>
+
+      <button type="button" class="bs-tab" role="tab" [class.active]="activeCategory === 'Limited Fashion'"
+        [attr.aria-selected]="activeCategory === 'Limited Fashion'" (click)="filterBestsellers('Limited Fashion')">
+        Limited Wear
+      </button>
+
+      <button type="button" class="bs-tab" role="tab" [class.active]="activeCategory === 'Elite Fashion'"
+        [attr.aria-selected]="activeCategory === 'Elite Fashion'" (click)="filterBestsellers('Elite Fashion')">
+        Elite Wear
+      </button>
+    </div>
+
+    <!-- Product cards -->
+    <div class="bs-grid">
+      <article class="bs-card" *ngFor="let item of filteredBestsellers">
+
+        <div class="bs-card-media">
+          <span class="bs-badge" *ngIf="item.fashionType">{{ item.fashionType }}</span>
+
+          <img class="bs-img" [src]="imageURL + (item.imagesPath?.[0] ?? '')" [alt]="item.name">
+
+          <div class="bs-overlay">
+            <button type="button" class="bs-btn-view" (click)="goToProductDetails(item.id)">Quick view</button>
+            <button type="button" class="bs-btn-bag" aria-label="Add to bag" (click)="toggleCartlist(item)">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bs-info">
+          <h3 class="bs-title">{{ item.name }}</h3>
+          <p class="bs-price">₹{{ item.selling_price }}</p>
+        </div>
+
+      </article>
+    </div>
+
+  </div>
+</section>
+  </section>
+</main>
+<!-- ***** Main Banner Area End ***** -->
+
+<section class="products-section py-5 bg-cream">
+  <div class="container">
+
+    <!-- Section Header -->
+    <div class="section-heading text-center mb-4 rd-section">
+      <span class="sub-heading">EXPLORE CATEGORIES</span>
+      <h2 class="rd-header">Our Latest Products</h2>
+      <p>Check out all of our products crafted for the modern lifestyle.</p>
+    </div>
+
+    <!-- Carousel Container -->
+    <div class="custom-carousel-wrapper">
+      <!-- Owl Carousel -->
+      <owl-carousel-o #owlCar [options]="customOptions">
+  <!-- Loop through allProducts (or filtered products if you prefer) -->
+  <ng-container *ngFor="let product of allProducts; ">
+    <ng-template carouselSlide>
+      
+      <!-- Exact same structure as the first product card -->
+      <div class="product-card">
+        <div class="thumb" tabindex="0" (click)="goToProductDetails(product.id)"
+          (keyup.enter)="goToProductDetails(product.id)">
+          
+          <span class="badge-discount" *ngIf="getDiscount(product) > 0"> {{ getDiscount(product) }}% OFF </span>
+          
+          <span class="wish-list-button">
+            <a href="javascript:void(0)"
+              [title]="checkwishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'"
+              (click)="$event.stopPropagation(); toggleWishlist(product)"> {{ checkwishlist(product.id) ? '❤️' : '🤍' }}
+            </a>
+          </span>
+          
+          <img [src]="imageURL + (product.imagesPath?.[0] ?? '')" [alt]="product.name" class="product-img">
+        </div>
+
+        <div class="down-content">
+          <div class="meta-row">
+            <span class="product-gender">{{ product.collection }}</span>
+            <div class="stars-wrapper">
+              <span class="stars">
+                <span *ngFor="let star of [1,2,3,4,5]; let sIndex = index" [class.active]="sIndex < starsFilled(product)">★</span>
+              </span>
+              <span class="rating-number">({{ getRating(product) | number:'1.1-1' }})</span>
+            </div>
+          </div>
+
+          <h4 class="product-title">{{ product.name }}</h4>
+          
+          <div class="price-wrapper">
+            <div class="prices">
+              <span class="listing-price-green">₹{{ getPrice(product) }}</span>
+              <span class="selling-price-red-cross" *ngIf="getDiscount(product) > 0"> ₹{{ product.listing_price }} </span>
+            </div>
+            <button type="button" class="btn-quick-add" (click)="toggleCartlist(product)"> 
+              <span>{{ checkCartlist(product.id) ? 'Added to Bag ✓' : 'Quick Add' }}</span>  
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+    </ng-template>
+  </ng-container>
+</owl-carousel-o>
+
+    </div>
+  </div>
+</section>
+<!-- ***** Men Area Ends ***** -->
+
+
+
+
+<!-- ***** Explore Area Starts ***** -->
+<section class="section best-features" id="explore">
+  <div class="rd-section">
+    <div class="rd-header">
+      <h3>Explore Our Products</h3>
+
+      <p>
+        At Club Avis, every collection begins long before a sketch reaches the cutting board. Through dedicated Research
+        & Development (R&D), our design and production teams continually test fabrics, weave patterns, and construction
+        techniques to ensure optimum performance.
+      </p>
+    </div>
+
+    <div class="featured-cards">
+      <div class="feature-card">
+        <div class="icon-wrap">01</div>
+        <div>
+          <h5>Op Trending Formals</h5>
+          <p>We source premium, high-caliber textiles selected for their breathability, soft tactile feel, skin-friendly
+            texture, and resilience. From high-grade cotton blends that maintain structure through repeated washes to
+            flexible weaves that allow natural movement, every fabric selection is tested for durability, colour
+            fastness, and drape.</p>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon-wrap">02</div>
+        <div>
+          <h5>Timeless Elegance Collection</h5>
+          <p>Timeless Elegance Collection, Sophisticated Urban Styles, Redefining Everyday Fashion and Crafted for
+            Comfort & Class.</p>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon-wrap">03</div>
+        <div>
+          <h5>Sophisticated Urban Styles</h5>
+          <p>True quality is defined by precision. Club Avis applies rigorous standards to every stitch, reinforced
+            seam, button placement, and collar alignment. The result is clothing that looks pristine from the moment you
+            put it on and maintains its structural integrity over time.</p>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="icon-wrap">04</div>
+        <div>
+          <h5>Redefining Everyday Fashion</h5>
+          <p>True quality is defined by precision. Club Avis applies rigorous standards to every stitch, reinforced
+            seam, button placement, and collar alignment. The result is clothing that looks pristine from the moment you
+            put it on and maintains its structural integrity over time.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rd-footer">
+      <h4>A Wardrobe for Every Occasion</h4>
+      <p>A trusted name in multiple industries that symbolizes Innovation, Transparency, and Trust.
+        A team of young and dynamic professionals is spearheading the Group into diverse fields like
+        Luxury Fashion, Manufacturing, Housing, and Aviation.</p>
+    </div>
+
+  </div>
+</section>
+<section class="explore-section">
+  <div class="container">
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <span class="sub-heading">EXPLORE CATEGORIES</span>
+      <h2 class="main-title">A Wardrobe for Every Occasion</h2>
+      <p class="description">
+        A trusted name in multiple industries that symbolizes Innovation, Transparency, and Trust. A team of young and
+        dynamic professionals.
+      </p>
+    </div>
+
+    <!-- 2x2 Bento Grid -->
+    <div class="explore-grid">
+
+      <!-- Box 1: Leather Bags Text Card -->
+      <div class="explore-card info-card">
+        <div class="card-inner">
+          <span class="badge-tag">FEATURED</span>
+          <h4>Leather Bags</h4>
+          <p>Latest Collection</p>
+          <a href="javascript:void(0)" class="discover-btn">
+            Discover More <span>→</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Box 2: First Image -->
+      <div class="explore-card image-card">
+        <img src="assets/web/images/explore-image-01.jpg" alt="Leather Bag Collection">
+        <div class="image-overlay">
+          <span>Flat Lay Essentials</span>
+        </div>
+      </div>
+
+      <!-- Box 3: Second Image -->
+      <div class="explore-card image-card">
+        <img src="assets/web/images/explore-image-02.jpg" alt="Lifestyle Leather Bag">
+        <div class="image-overlay">
+          <span>Urban Fashion</span>
+        </div>
+      </div>
+
+      <!-- Box 4: Different Types Text Card -->
+      <div class="explore-card info-card dark-card">
+        <div class="card-inner">
+          <span class="badge-tag gold">VARIETY</span>
+          <h4>Different Types</h4>
+          <p class="count-text">Over 304+ Products</p>
+          <a href="javascript:void(0)" class="discover-btn">
+            Explore All <span>→</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<!-- ***** Explore Area Ends ***** -->
+
+<!-- ***** Social Area Starts ***** -->
+ <!-- <section class="section" id="social">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="section-heading">
+          <h2>Social Media</h2>
+          <span>Details to details is what makes ClubAvis different from the other themes.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row images">
+      <div class="col-2">
+        <div class="thumb">
+          <div class="icon">
+            <a href="http://instagram.com">
+              <h6>Fashion</h6>
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+          <img src="assets/web/images/instagram-01.jpg" alt="">
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="thumb">
+          <div class="icon">
+            <a href="http://instagram.com">
+              <h6>New</h6>
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+          <img src="assets/web/images/instagram-02.jpg" alt="">
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="thumb">
+          <div class="icon">
+            <a href="http://instagram.com">
+              <h6>Brand</h6>
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+          <img src="assets/web/images/instagram-03.jpg" alt="">
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="thumb">
+          <div class="icon">
+            <a href="http://instagram.com">
+              <h6>Makeup</h6>
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+          <img src="assets/web/images/instagram-04.jpg" alt="">
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="thumb">
+          <div class="icon">
+            <a href="http://instagram.com">
+              <h6>Leather</h6>
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+          <img src="assets/web/images/instagram-05.jpg" alt="">
+        </div>
+      </div>
+      <div class="col-2">
+        <div class="thumb">
+          <div class="icon">
+            <a href="http://instagram.com">
+              <h6>Bag</h6>
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+          <img src="assets/web/images/instagram-06.jpg" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>  -->
+<!-- ***** Social Area Ends ***** -->
+
+<!-- <section class="subscribe">
+  <div class="container">
+    <div class="subscribe-grid">
+      <div class="subscribe-form-area">
+        <div class="section-heading">
+          <span class="sub-heading">NEWSLETTER</span>
+          <h2>Get Information About Latest Collections</h2>
+          <p>Subscribe to stay updated and explore partnership opportunities.</p>
+        </div>
+
+        <form (ngSubmit)="onSubscribe()" class="subscribe-form">
+          <div class="form-row">
+            <div class="input-group">
+              <input name="name" type="text" [(ngModel)]="subscribeData.name" placeholder="Your Name" required>
+            </div>
+            <div class="input-group">
+              <input name="email" type="email" [(ngModel)]="subscribeData.email" placeholder="Your Email Address"
+                required>
+            </div>
+            <button type="submit" id="form-submit" class="btn-subscribe">
+              <i class="fa fa-paper-plane"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="subscribe-info-area">
+        <div class="info-grid">
+          <div class="info-column">
+            <ul class="info-list">
+              <li>
+                <strong>Location:</strong>
+                <span> E40/3, Pocket D, Okhla Phase 2, Okhla Industrial estate, 110020</span>
+              </li>
+              <li>
+                <strong>Phone:</strong>
+                <span>011 4158 2087</span>
+              </li>
+              <li>
+                <strong>Office Location:</strong>
+                <span>New Delhi</span>
+              </li>
+            </ul>
+          </div>
+          <div class="info-column">
+            <ul class="info-list">
+              <li>
+                <strong>Work Hours:</strong>
+                <span>07:30 AM - 9:30 PM Daily</span>
+              </li>
+              <li>
+                <strong>Email:</strong>
+                <span>customercare&#64;clubavis.co.in</span>
+              </li>
+              <li>
+                <strong>Social Media:</strong>
+                <span class="social-links-inline">
+                  <a href="#">Facebook</a>, <a href="#">Instagram</a>, <a href="#">Linkedin</a>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section> -->

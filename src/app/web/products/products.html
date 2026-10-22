@@ -1,0 +1,240 @@
+<!-- MAIN BANNER AREA -->
+<section class="page-heading">
+  <div class="banner-content">
+    <span class="sub-title">PREMIUM SELECTION</span>
+    <h2>Check Our Products</h2>
+    <div class="center-bird">
+      <img src="assets/other-logo.png" alt="Club Avis Logo" class="bird-icon">
+    </div>
+    <p>Check out all of our products crafted for the modern lifestyle.</p>
+
+  </div>
+</section>
+
+<section class="products-section">
+  <div class="container">
+    <div class="shop-layout">
+      <div class="filter-backdrop" *ngIf="isFilterDrawerOpen" (click)="closeFilters()"></div>
+      <aside class="filters-panel" [class.open]="isFilterDrawerOpen" aria-label="Product filters">
+
+        <div class="filters-head">
+          <h3 class="filters-title">Filters</h3>
+          <div class="filters-head-actions">
+            <button type="button" class="clear-all" *ngIf="appliedFilters.length" (click)="clearAll()">
+              CLEAR ALL
+            </button>
+            <button type="button" class="drawer-close" (click)="closeFilters()" aria-label="Close filters">
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <!-- Applied filter chips -->
+        <div class="applied-chips" *ngIf="appliedFilters.length">
+          <button type="button" class="applied-chip" *ngFor="let chip of appliedFilters; trackBy: trackById"
+            (click)="removeFilter(chip)" [attr.aria-label]="'Remove filter ' + chip.label">
+            <span class="chip-x">&times;</span>
+            <span class="chip-swatch" *ngIf="chip.swatch" [style.background-color]="chip.swatch"></span>
+            {{ chip.label }}
+          </button>
+        </div>
+
+        <div class="filters-body">
+
+          <!-- PRICE -->
+          <div class="filter-group">
+            <button type="button" class="filter-title" (click)="toggleSection('price')"
+              [attr.aria-expanded]="openSections['price']">
+              Price
+              <span class="chev" [class.open]="openSections['price']"></span>
+            </button>
+            <div class="filter-content" *ngIf="openSections['price']">
+              <div class="price-inputs">
+                <input type="number" min="0" inputmode="numeric" [placeholder]="'Min ₹' + priceBounds.min"
+                  [value]="filters.minPrice ?? ''" (change)="onPriceInput('min', $any($event.target).value)"
+                  aria-label="Minimum price">
+                <span class="price-to">to</span>
+                <input type="number" min="0" inputmode="numeric" [placeholder]="'Max ₹' + priceBounds.max"
+                  [value]="filters.maxPrice ?? ''" (change)="onPriceInput('max', $any($event.target).value)"
+                  aria-label="Maximum price">
+              </div>
+              <div class="chip-list">
+                <button type="button" class="chip-option" *ngFor="let r of priceRanges" [class.active]="isPriceRange(r)"
+                  (click)="setPriceRange(r)">
+                  {{ r.label }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIZE -->
+          <div class="filter-group" *ngIf="options.sizes.length">
+            <button type="button" class="filter-title" (click)="toggleSection('sizes')"
+              [attr.aria-expanded]="openSections['sizes']">
+              Size
+              <span class="chev" [class.open]="openSections['sizes']"></span>
+            </button>
+            <div class="filter-content" *ngIf="openSections['sizes']">
+              <div class="chip-list">
+                <button type="button" class="chip-option" *ngFor="let size of options.sizes"
+                  [class.active]="isSelected('sizes', size)" [attr.aria-pressed]="isSelected('sizes', size)"
+                  (click)="toggleFacet('sizes', size)">
+                  {{ size }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLOR -->
+          <div class="filter-group" *ngIf="options.colors.length">
+            <button type="button" class="filter-title" (click)="toggleSection('colors')"
+              [attr.aria-expanded]="openSections['colors']">
+              Color
+              <span class="chev" [class.open]="openSections['colors']"></span>
+            </button>
+            <div class="filter-content" *ngIf="openSections['colors']">
+              <div class="color-list">
+                <button type="button" class="color-dot" *ngFor="let c of options.colors" [style.background-color]="c"
+                  [class.active]="isSelected('colors', c)" [attr.aria-pressed]="isSelected('colors', c)"
+                  [attr.aria-label]="'Color ' + c" [title]="c" (click)="toggleFacet('colors', c)"></button>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngFor="let facet of checkboxFacets">
+            <div class="filter-group" *ngIf="options[facet.key].length">
+              <button type="button" class="filter-title" (click)="toggleSection(facet.key)"
+                [attr.aria-expanded]="openSections[facet.key]">
+                {{ facet.title }}
+                <span class="chev" [class.open]="openSections[facet.key]"></span>
+              </button>
+              <div class="filter-content" *ngIf="openSections[facet.key]">
+                <label class="check-row" *ngFor="let opt of options[facet.key]">
+                  <input type="checkbox" [checked]="isSelected(facet.key, opt)" (change)="toggleFacet(facet.key, opt)">
+                  <span>{{ displayLabel(facet.key, opt) }}</span>
+                </label>
+              </div>
+            </div>
+          </ng-container>
+
+          <div class="filter-group">
+            <button type="button" class="filter-title" (click)="toggleSection('rating')"
+              [attr.aria-expanded]="openSections['rating']">
+              Customer Ratings
+              <span class="chev" [class.open]="openSections['rating']"></span>
+            </button>
+            <div class="filter-content" *ngIf="openSections['rating']">
+              <label class="check-row" *ngFor="let r of ratingOptions">
+                <input type="checkbox" [checked]="filters.minRating === r" (change)="setMinRating(r)">
+                <span>{{ r }}★ &amp; above</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <button type="button" class="filter-title" (click)="toggleSection('discount')"
+              [attr.aria-expanded]="openSections['discount']"> Discount
+              <span class="chev" [class.open]="openSections['discount']"></span>
+            </button>
+            <div class="filter-content" *ngIf="openSections['discount']">
+              <label class="check-row" *ngFor="let d of discountOptions">
+                <input type="checkbox" [checked]="filters.minDiscount === d" (change)="setMinDiscount(d)">
+                <span>{{ d }}% or more</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="drawer-footer">
+          <button type="button" class="btn-show-results" (click)="closeFilters()">
+            Show {{ filteredProducts.length }} products
+          </button>
+        </div>
+      </aside>
+
+      <div class="shop-results" #resultsTop>
+
+        <!-- Count + sort -->
+        <div class="results-bar">
+          <div class="results-left">
+            <button type="button" class="btn-open-filters" (click)="openFilters()"> Filters
+              <span class="filter-count" *ngIf="appliedFilters.length">{{ appliedFilters.length }}</span>
+            </button>
+            <span class="results-count" *ngIf="!isLoading && filteredProducts.length">
+              Showing {{ rangeStart }} – {{ rangeEnd }} of {{ filteredProducts.length }} products
+            </span>
+          </div>
+
+          <div class="sort-options" role="group" aria-label="Sort products">
+            <span class="sort-label">Sort By</span>
+            <button type="button" class="sort-btn" *ngFor="let s of sortOptions" [class.active]="sortBy === s.key"
+              (click)="setSort(s.key)">
+              {{ s.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="products-grid" *ngIf="pagedProducts.length">
+          <div class="product-card" *ngFor="let product of pagedProducts; trackBy: trackByProduct">
+            <div class="thumb" tabindex="0" (click)="goToProductDetails(product.id)"
+              (keyup.enter)="goToProductDetails(product.id)">
+              <span class="badge-discount" *ngIf="getDiscount(product) > 0"> {{ getDiscount(product) }}% OFF </span>
+              <span class="wish-list-button">
+                <a href="javascript:void(0)"
+                  [title]="checkwishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'"
+                  (click)="$event.stopPropagation(); toggleWishlist(product)"> {{ checkwishlist(product.id) ? '❤️' : '🤍' }}
+                </a>
+              </span>
+              <img [src]="imageURL + (product.imagesPath?.[0] ?? '')" [alt]="product.name" class="product-img">
+            </div>
+            <div class="down-content">
+              <div class="meta-row">
+                <span class="product-gender"> {{ product.collection }}</span>
+                <div class="stars-wrapper">
+                  <span class="stars">
+                    <span *ngFor="let star of [1,2,3,4,5]; let sIndex = index" [class.active]="sIndex < starsFilled(product)">★</span>
+                  </span>
+                  <span class="rating-number">({{ getRating(product) | number:'1.1-1' }})</span>
+                </div>
+              </div>
+
+              <h4 class="product-title">{{ product.name }}</h4>
+              <div class="product-info-tags"> <span class="tag"><b>Model:</b> {{ product.model }}</span></div>
+              <div class="price-wrapper">
+                <div class="prices">
+                  <span class="listing-price-green">₹{{ getPrice(product) }}</span>
+                  <span class="selling-price-red-cross" *ngIf="getDiscount(product) > 0"> ₹{{ product.listing_price }} </span>
+                </div>
+                <button type="button" class="btn-quick-add" (click)="toggleCartlist(product)">
+                  <span>{{ checkCartlist(product.id) ? 'Added ✓' : '+ Add' }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="pagination" *ngIf="totalPages > 1" aria-label="Pagination">
+          <button type="button" class="page-btn page-nav" [disabled]="currentPage === 1"
+            (click)="goToPage(currentPage - 1)" aria-label="Previous page">&lsaquo;</button>
+
+          <ng-container *ngFor="let item of pageItems; trackBy: trackByIndex">
+            <span class="page-gap" *ngIf="item.gap">{{ item.label }}</span>
+            <button type="button" class="page-btn" *ngIf="!item.gap" [class.active]="item.page === currentPage"
+              [attr.aria-current]="item.page === currentPage ? 'page' : null" [attr.aria-label]="'Page ' + item.label"
+              (click)="goToPage(item.page)">{{ item.label }}</button>
+          </ng-container>
+
+          <button type="button" class="page-btn page-nav" [disabled]="currentPage === totalPages"
+            (click)="goToPage(currentPage + 1)" aria-label="Next page">&rsaquo;</button>
+        </nav>
+        <div class="state-box" *ngIf="isLoading"> <p>Loading products…</p> </div>
+        <div class="state-box" *ngIf="!isLoading && !filteredProducts.length">
+          <h3>No products match these filters</h3>
+          <p>Try removing a filter or widening the price range.</p>
+          <button type="button" class="btn-quick-add" *ngIf="appliedFilters.length" (click)="clearAll()"> Clear all filters </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

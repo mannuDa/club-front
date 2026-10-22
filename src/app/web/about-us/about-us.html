@@ -1,0 +1,254 @@
+ `
+    <!-- MAIN BANNER AREA -->
+    <section class="about-page-heading">
+      <div class="banner-content">
+        <span class="sub-title">OUR JOURNEY</span>
+        <h2>About Our Company</h2>
+        <div class="center-bird">
+              <img src="assets/other-logo-trans.png" alt="Club Avis Logo" class="bird-icon">
+
+        </div>
+        <p>Awesome, Passionate & Creative Team</p>
+      </div>
+    </section>
+
+    <!-- ABOUT CONTENT AREA -->
+    <section class="about-us">
+      <div class="container">
+        
+        <!-- SECTION 1: OVERVIEW -->
+        <div class="about-grid">
+          <div class="left-image">
+            <img src="/assets/web/images/about-us-left.png" alt="About Us Image">
+          </div>
+          
+          <div class="right-content">
+            <span class="section-badge">HERITAGE & VISION</span>
+            <h4>About Us & Our Skills</h4>
+            
+            <p class="lead-text">
+              In an era where personal expression meets fast-paced daily life, how you dress is more than a routine—it is a daily declaration of confidence, mood, and identity. Modern menswear has long navigated a frustrating trade-off: choose premium craftsmanship and face prohibitive pricing, or choose affordability at the cost of durability, proper fit, and lasting comfort.
+            </p>
+            <p class="description-text">
+              Club Avis was built to break that compromise. By merging rigorous design standards with accessible value, Club Avis redefines modern menswear. The brand delivers timeless, high-quality garments engineered to integrate effortlessly into every dynamic of contemporary life.
+            </p>
+
+            <div class="vision-box">
+              <h5>The Vision: Purposeful Fashion for the Modern Man</h5>
+              <p>
+                Fashion should never feel like a performance, nor should it demand unnecessary sacrifice. Club Avis is grounded in the belief that true style stems from ease and authenticity. Whether preparing for a critical executive presentation, heading out for a relaxed weekend gathering, or dressing for an intimate evening celebration, modern men need a wardrobe that works as hard and adaptably as they do.
+              </p>
+              <p>
+                Rather than chasing fleeting, short-lived micro-trends that clutter closets and lose relevance in a single season, Club Avis focuses on creating enduring staples. Every piece is designed to serve as a building block in a versatile wardrobe, celebrating individual personality through refined aesthetics, smart construction, and understated elegance.
+              </p>
+            </div>
+
+            <!-- QUOTE BLOCK -->
+            <div class="quote-card">
+              <span class="quote-icon">“</span>
+              <!-- <p>Club Avis is backed by <a href="http://dargroup.in/" target="_blank" rel="nofollow">DAR Group</a></p> -->
+              <p class="closing-text">
+                Whether you're dressing for work, weekends, or special occasions, Club Avis apparel is designed to keep you looking confident and feeling your best. Club Avis is more than just a clothing brand—Our commitment lies in creating timeless apparel that celebrates individuality through superior craft and accessible value.
+              </p>
+            </div>
+
+
+            <!-- SOCIAL LINKS -->
+            <ul class="social-links">
+              <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+              <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+              <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+              <li><a href="#"><i class="fa fa-behance"></i></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- SECTION 2: R&D & FEATURE LIST -->
+        <div class="rd-section">
+          <div class="rd-header">
+            <h3>Dedicated R&D: The Science Behind Supreme Comfort</h3>
+            <p>
+              What transforms a garment from merely good to exceptional? The answer lies beneath the surface—in the structural integrity, fabric science, and subtle engineering details that go unnoticed until you wear them all day.
+            </p>
+            <p>
+              At Club Avis, every collection begins long before a sketch reaches the cutting board. Through dedicated Research & Development (R&D), our design and production teams continually test fabrics, weave patterns, and construction techniques to ensure optimum performance.
+            </p>
+          </div>
+
+          <div class="featured-cards">
+            <div class="feature-card">
+              <div class="icon-wrap">01</div>
+              <div>
+                <h5>Fabric Excellence</h5>
+                <p>We source premium, high-caliber textiles selected for their breathability, soft tactile feel, skin-friendly texture, and resilience. From high-grade cotton blends that maintain structure through repeated washes to flexible weaves that allow natural movement, every fabric selection is tested for durability, colour fastness, and drape.</p>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="icon-wrap">02</div>
+              <div>
+                <h5>Ergonomic Fit & Movement</h5>
+                <p>A well-designed shirt or pair of trousers should never feel restrictive. Club Avis designs pieces that move naturally with your body. By analysing shoulder drop, armhole depth, chest taper, and waist ergonomics, our garments deliver a sleek, modern silhouette without sacrificing freedom of motion.</p>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="icon-wrap">03</div>
+              <div>
+                <h5>Meticulous Craftsmanship</h5>
+                <p>True quality is defined by precision. Club Avis applies rigorous standards to every stitch, reinforced seam, button placement, and collar alignment. The result is clothing that looks pristine from the moment you put it on and maintains its structural integrity over time.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rd-footer">
+            <h4>A Wardrobe for Every Occasion</h4>
+            <p>Building a functional wardrobe means having dependable, elevated choices for any setting. Club Avis collections are thoughtfully curated to take the guesswork out of daily dressing.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- OUR TEAM AREA -->
+    <section class="our-team">
+      <div class="container">
+        <div class="section-heading text-center">
+          <span class="sub-heading">PEOPLE BEHIND AVIS</span>
+          <h2>Our Amazing Team</h2>
+          <p>Details to details is what makes Hexashop different from the other themes.</p>
+        </div>
+
+        <div class="team-grid">
+          @for (member of teamMembers; track member.id) {
+            <div class="team-item">
+              <div class="thumb">
+                <img [src]="member.image" [alt]="member.name">
+                <div class="hover-effect">
+                  <div class="inner-content">
+                    <ul>
+                      <li><a [href]="member.socials.facebook"><i class="fa fa-facebook"></i></a></li>
+                      <li><a [href]="member.socials.twitter"><i class="fa fa-twitter"></i></a></li>
+                      <li><a [href]="member.socials.linkedin"><i class="fa fa-linkedin"></i></a></li>
+                      <li><a [href]="member.socials.behance"><i class="fa fa-behance"></i></a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="down-content">
+                <h4>{{ member.name }}</h4>
+                <span>{{ member.role }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- STORES CAROUSEL AREA -->
+    <section class="our-services">
+      <div class="container">
+        <div class="section-heading text-center">
+          <span class="sub-heading">PRESENCE</span>
+          <h2>Our Stores</h2>
+          <p>Here are Our Partnered Stores in Different Cities.</p>
+        </div>
+
+        <div class="custom-carousel-wrapper">
+          <button type="button" class="custom-nav-btn prev-btn" (click)="prevSlide()" aria-label="Previous">
+            <i class="fa fa-chevron-left"></i>
+          </button>
+
+          <owl-carousel-o #owlCar [options]="customOptions">
+            <ng-container *ngFor="let service of services | slice:0:5">
+              <ng-template carouselSlide>
+                <div class="service-item">
+                  <div class="store-img-wrap">
+                    <img [src]="imageURL + service.storeimagesPath" [alt]="service.store_name" class="product-img">
+                  </div>
+                  <h4>{{ service.store_name }}</h4>
+                  <p><i class="fa fa-map-marker"></i> {{ service.location }}</p>
+                </div>
+              </ng-template>
+            </ng-container>
+          </owl-carousel-o>
+
+          <button type="button" class="custom-nav-btn next-btn" (click)="nextSlide()" aria-label="Next">
+            <i class="fa fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUBSCRIBE AREA -->
+    <section class="subscribe">
+      <div class="container">
+        <div class="subscribe-grid">
+          
+          <!-- Left: Form -->
+          <div class="subscribe-form-area">
+            <div class="section-heading">
+              <span class="sub-heading">NEWSLETTER</span>
+              <h2>Get Information About Latest Collections</h2>
+              <p>Subscribe to stay updated and explore partnership opportunities.</p>
+            </div>
+
+            <form (ngSubmit)="onSubscribe()" class="subscribe-form">
+              <div class="form-row">
+                <div class="input-group">
+                  <input name="name" type="text" [(ngModel)]="subscribeData.name" placeholder="Your Name" required>
+                </div>
+                <div class="input-group">
+                  <input name="email" type="email" [(ngModel)]="subscribeData.email" placeholder="Your Email Address" required>
+                </div>
+                <button type="submit" id="form-submit" class="btn-subscribe">
+                  <i class="fa fa-paper-plane"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Right: Contact info -->
+          <div class="subscribe-info-area">
+            <div class="info-grid">
+              <div class="info-column">
+                <ul class="info-list">
+                  <li>
+                    <strong>Location:</strong>
+                    <span>110020, E40/3, Pocket D, Okhla Phase 2, Okhla Industrial estate</span>
+                  </li>
+                  <li>
+                    <strong>Phone:</strong>
+                    <span>011 4158 2087</span>
+                  </li>
+                  <li>
+                    <strong>Office Location:</strong>
+                    <span>New Delhi</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="info-column">
+                <ul class="info-list">
+                  <li>
+                    <strong>Work Hours:</strong>
+                    <span>07:30 AM - 9:30 PM Daily</span>
+                  </li>
+                  <li>
+                    <strong>Email:</strong>
+                    <span>customercare&#64;clubavis.co.in</span>
+                  </li>
+                  <li>
+                    <strong>Social Media:</strong>
+                    <span class="social-links-inline">
+                      <a href="#">Facebook</a>, <a href="#">Instagram</a>, <a href="#">Linkedin</a>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  `

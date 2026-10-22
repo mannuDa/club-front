@@ -1,0 +1,11 @@
+.app-footer {
+  font-size: 0.775rem;
+}
+
+.hover-primary:hover {
+  color: #4f46e5 !important;
+}
+
+.fs-8 { 
+  font-size: 0.75rem !important; 
+}

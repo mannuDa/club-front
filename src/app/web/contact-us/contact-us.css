@@ -1,0 +1,335 @@
+
+/* GLOBAL THEME VARIABLES */
+:root {
+  --color-navy: #111E38;
+  --color-gold: #C19A6B;
+  --color-bg-light: #FAF8F5;
+  --color-card-bg: #F3EFEA;
+  --color-text-dark: #111E38;
+  --color-text-muted: #666666;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Montserrat', sans-serif;
+}
+
+/* PAGE BANNER */
+.page-banner {
+  background-color: var(--color-bg-light);
+  padding: 4rem 1rem 2rem 1rem;
+  border-bottom: 1px solid #EAE3D9;
+}
+
+.page-banner .sub-heading {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--color-gold);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.page-banner .main-title {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  color: var(--color-navy);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.page-banner .banner-desc {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* CONTACT SECTION */
+.contact-section {
+  background-color: var(--color-bg-light);
+  padding: 4rem 0;
+}
+
+.map-card {
+  height: 100%;
+  min-height: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(17, 30, 56, 0.06);
+  border: 1px solid #EAE3D9;
+}
+
+.map-card iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.contact-form-card {
+  background: #FFFFFF;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(17, 30, 56, 0.06);
+  border: 1px solid #EAE3D9;
+}
+
+.form-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: var(--color-navy);
+  margin-bottom: 0.4rem;
+}
+
+.form-header p {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.8rem;
+}
+
+/* INPUT STYLES */
+.input-group-custom input,
+.input-group-custom textarea {
+  width: 100%;
+  background-color: var(--color-bg-light);
+  border: 1px solid #E3DDD4;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--color-navy);
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-group-custom input:focus,
+.input-group-custom textarea:focus {
+  border-color: var(--color-gold);
+}
+
+/* BUTTONS */
+.btn-luxury-primary {
+  width: 100%;
+  background-color: var(--color-navy);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-luxury-primary:hover {
+  background-color: var(--color-gold);
+}
+
+/* NEWSLETTER & INFO SECTION */
+.newsletter-section {
+  background-color: var(--color-navy);
+  color: #FFFFFF;
+  padding: 4.5rem 0;
+}
+
+.newsletter-card {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.newsletter-card .badge-tag {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-gold);
+  background: rgba(193, 154, 107, 0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.newsletter-card h2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  margin-bottom: 0.6rem;
+}
+
+.newsletter-card p {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: #A0AAB8;
+  margin-bottom: 1.8rem;
+  line-height: 1.6;
+}
+
+.subscribe-box {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.sub-input {
+  flex: 1;
+  min-width: 160px;
+  background: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+}
+
+.btn-luxury-gold {
+  background-color: var(--color-gold);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btn-luxury-gold:hover {
+  opacity: 0.9;
+}
+
+/* STORE INFO */
+.store-info-card {
+  padding-left: 1rem;
+}
+
+.info-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-gold);
+  margin-bottom: 1.5rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.info-item h6 {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #A0AAB8;
+  margin-bottom: 0.3rem;
+}
+
+.info-item p {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.social-wrapper h6 {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #A0AAB8;
+  margin-bottom: 0.4rem;
+}
+
+.social-links {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: #A0AAB8;
+}
+
+.social-links a {
+  color: var(--color-gold);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.social-links a:hover {
+  color: #FFFFFF;
+}
+
+/* PAGE BANNER WITH BACKGROUND IMAGE */
+.contact-page-heading {
+  position: relative;
+  margin-top: 100px;
+  margin-bottom: 30px;
+  padding: 5rem 1rem;
+  background-image: url('../assets/images/about-us-page-heading.jpg'); /* Image path */
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+/* Dark Overlay for Text Readability */
+.contact-page-heading .banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 30, 56, 0.65); /* Navy transparent tint */
+  z-index: 1;
+}
+
+/* Content layer over background image */
+.contact-page-heading .inner-content {
+  position: relative;
+  z-index: 2;
+}
+
+.contact-page-heading .sub-heading {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2.5px;
+  color: #C19A6B; /* Gold Accent */
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.contact-page-heading .main-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.8rem;
+  color: #FFFFFF; /* Pure white text over image */
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.contact-page-heading .banner-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #E2E8F0;
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 991px) {
+  .store-info-card {
+    padding-left: 0;
+  }
+  .subscribe-box {
+    flex-direction: column;
+  }
+  .btn-luxury-gold {
+    width: 100%;
+  }
+}

@@ -1,0 +1,5 @@
+button[type="submit"] {
+    position: relative !important;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+}

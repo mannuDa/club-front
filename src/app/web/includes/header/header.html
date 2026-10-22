@@ -1,0 +1,108 @@
+<header class="header">
+  <!-- Logo Section -->
+  <div class="logo">
+    <a [routerLink]="'/home'" routerLinkActive="active" (click)="toggleMenu()">
+      <img src="assets/circle-logo.png" alt="Club Avis Logo" class="bird-icon">
+
+    
+    <div class="brand-text">
+      <span class="brand-name">CLUB AVIS</span>
+      <span class="brand-tagline">PREMIUM FASHION</span>
+    </div>
+    </a>
+
+  </div>
+
+  <!-- Navigation Links with Dynamic [class.is-open] -->
+  <nav class="nav-links" [class.is-open]="isMenuOpen">
+
+  <a [routerLink]="'/home'" routerLinkActive="active" (click)="toggleMenu()"> HOME </a>
+  <!-- COLLECTIONS -->
+  <div class="nav-dropdown">
+    <a [routerLink]="'/products'" routerLinkActive="active" class="collections-link" > COLLECTIONS <span class="arrow"></span>
+    </a>
+
+    <div class="dropdown-menu">
+      <a [routerLink]="['/products']" [queryParams]="{ gstyle: 'Shirts' }"> Shirts </a>
+      <a [routerLink]="['/products']" [queryParams]="{ gstyle: 'T-Shirts' }"> T-Shirts </a>
+      <a [routerLink]="['/products']" [queryParams]="{ gstyle: 'Jacket' }"> Jacket </a>
+      <a [routerLink]="['/products']" [queryParams]="{ gstyle: 'Sweater' }"> Sweater </a>
+      <a [routerLink]="['/products']" [queryParams]="{ gstyle: 'Trouser' }"> Trousers </a>
+      <a [routerLink]="['/products']" [queryParams]="{ gstyle: 'Jeans' }"> Trousers </a>
+    </div>
+  </div>
+  <a [routerLink]="'/new-arrivals'" routerLinkActive="active" (click)="toggleMenu()" > NEW ARRIVALS </a>
+  <a [routerLink]="'/pp'"  routerLinkActive="active" (click)="toggleMenu()"> OUR STORES </a>
+
+</nav>
+
+
+  <!-- Action Icons + Hamburger Menu Toggle Button -->
+  <div class="header-actions">
+    <button class="icon-btn" aria-label="Search" (click)="toggleSearch()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <div class="search-wrapper">    
+        <div class="search-box" [class.open]="isSearchOpen">
+          <input type="text" placeholder="Search products..." [(ngModel)]="searchQuery" (keyup.enter)="searchProducts()" />
+          <button *ngIf="searchQuery" class="clear-btn" (click)="clearSearch()" aria-label="Clear search">×</button>
+        </div>
+      </div>
+    </button>
+
+
+<!-- Account Icon (Always Visible - keeps your exact functionality) -->
+<button *ngIf="isLoggedIn == false"  class="icon-btn" aria-label="Account" (click)="openAccount()" title="Account">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>
+</button>
+
+<!-- Logout Icon (Visible ONLY when logged in) -->
+ @if (isLoggedIn) {
+   <button 
+     class="icon-btn logout-btn" 
+     aria-label="Logout" 
+     (click)="logout()" 
+     title="Logout">
+     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+       <polyline points="16 17 21 12 16 7"></polyline>
+       <line x1="21" y1="12" x2="9" y2="12"></line>
+     </svg>
+   </button>
+   
+
+
+<a routerLink="/my-account" class="icon-btn heart-btn" aria-label="Wishlist" >
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+  </svg>
+  <!-- <span class="badge" *ngIf="wishlistCount > 0">{{ wishlistCount }}</span> -->
+  <span class="badge" >{{ wishlistCount }}</span>
+</a>
+
+ }
+
+    <a routerLink="/my-cart" class="icon-btn cart-btn" aria-label="Cart" >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <path d="M16 10a4 4 0 0 1-8 0"></path>
+    </svg>
+    <span class="badge">{{ cartCount }}</span>
+  </a>
+
+    <!-- Mobile Hamburger Toggle Button -->
+    <button class="icon-btn menu-toggle" (click)="toggleMenu()" aria-label="Toggle Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+</header>

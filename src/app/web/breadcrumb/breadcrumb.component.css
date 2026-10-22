@@ -1,0 +1,36 @@
+.breadcrumb {
+  padding: 0.75rem 1.5rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumb li + li::before {
+  content: '/';
+  padding: 0 0.6rem;
+  color: #A0AAB8;
+}
+
+.breadcrumb a {
+  color: #8C98A4;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb a:hover {
+  color: #C19A6B;
+}
+
+.breadcrumb [aria-current='page'] {
+  font-weight: 600;
+  color: #111E38;
+}

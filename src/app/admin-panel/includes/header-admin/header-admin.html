@@ -1,0 +1,56 @@
+<header class="admin-topbar bg-white border-bottom sticky-top">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center justify-content-between header-wrapper">
+      
+      <!-- Search Input -->
+      <div class="search-box">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0 ps-3">
+            <i class="mdi mdi-magnify text-muted fs-5"></i>
+          </span>
+          <input type="text" class="form-control bg-light border-0 shadow-none fs-7" placeholder="Search products, orders, SKU...">
+        </div>
+      </div>
+
+      <!-- User Actions & Profile -->
+      <div class="d-flex align-items-center gap-3">
+        
+        <!-- Notifications -->
+        <button class="btn btn-icon rounded-circle position-relative border-0" type="button">
+          <i class="mdi mdi-bell-outline fs-5 text-secondary"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light fs-8" *ngIf="notificationCount > 0">
+            {{ notificationCount }}
+          </span>
+        </button>
+
+        <div class="vr h-50 my-auto text-muted opacity-25"></div>
+
+        <!-- User Dropdown -->
+        <div class="dropdown">
+          <div class="d-flex align-items-center gap-2 cursor-pointer dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="avatar-circle">
+              <img [src]="userProfile.avatar" 
+                   alt="User" 
+                   onerror="this.src='https://ui-avatars.com/api/?name=Mannu+Da&background=4f46e5&color=fff'">
+            </div>
+            <div class="d-none d-md-block text-start">
+              <h6 class="fw-semibold mb-0 text-dark fs-7 lh-sm">{{ userProfile.name }}</h6>
+              <span class="text-muted fs-8">{{ userProfile.role }}</span>
+            </div>
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
+            <li><a class="dropdown-item fs-7 py-2" routerLink="/admin/profile"><i class="mdi mdi-account-outline me-2 text-primary"></i>Profile</a></li>
+            <li><a class="dropdown-item fs-7 py-2" routerLink="/admin/settings"><i class="mdi mdi-cog-outline me-2 text-secondary"></i>Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <button class="dropdown-item fs-7 py-2 text-danger border-0 bg-transparent w-100 text-start" (click)="onLogOutSubmit()">
+                <i class="mdi mdi-logout me-2"></i>Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</header>

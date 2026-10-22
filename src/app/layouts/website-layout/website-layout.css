@@ -1,0 +1,41 @@
+
+
+/* ==========================================
+   UNIVERSAL MOBILE OVERFLOW & RESPONSIVE FIX
+   ========================================== */
+
+/* 1. Global Box-Sizing & Reset */
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
+/* 2. Global Viewport & Scroll Locking */
+html, body {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 3. Universal Media Query (Small Screens / Mobile) */
+@media screen and (max-width: 991px) {
+  
+  /* Images aur SVGs ko container se bahar jaane se rokne ke liye */
+  img, svg, video, iframe {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Saare Rows aur Flex containers ko screen ke andar rakhne ke liye */
+  .row, [class*="col-"] {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Flex containers ko auto-wrap karne ke liye */
+  .d-flex, [class*="flex-"] {
+    flex-wrap: wrap;
+  }
+}

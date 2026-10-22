@@ -1,0 +1,85 @@
+
+<div class="admin-orders-container">
+  <div class="header-row">
+    <h2>Manage Orders</h2>
+    <span class="badge-count">Total Orders: {{ orders.length }}</span>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="table-responsive">
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Date</th>
+          <th>Items Qty</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <!-- Backend ke orderID ya _id ko use kiya gaya hai -->
+          <td class="font-weight-bold">{{ order.orderID || order._id }}</td>
+          <td>
+            <!-- shippingAddress object se name aur email nikal rahe hain -->
+            <div class="cust-name">{{ order.shippingAddress?.fullName || 'N/A' }}</div>
+            <small class="text-muted">{{ order.shippingAddress?.email || 'N/A' }}</small>
+          </td>
+          <!-- createdAt ya orderTime format -->
+          <td>{{ (order.createdAt || order.orderTime) | date:'mediumDate' }}</td>
+          <td>{{ order.quntity }} items</td>
+          <!-- amount (unitPrice * quntity ya direct amount) -->
+          <td class="price">₹{{ order.amount }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="(order.status || 'pending').toLowerCase()">
+              {{ order.status }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-view" (click)="viewOrderDetails(order)" title="View Details">👁️</button>
+              
+              <!-- Status Update Dropdown/Actions -->
+              <select class="status-select" (change)="updateStatus(order._id, $any($event.target).value)">
+                <option value="" disabled selected>Change Status</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Order Details Modal (Popup) -->
+  <div class="modal-backdrop" *ngIf="selectedOrder" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Order Details: {{ selectedOrder.orderID || selectedOrder._id }}</h3>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Customer Name:</strong> {{ selectedOrder.shippingAddress?.fullName }}</p>
+        <p><strong>Email:</strong> {{ selectedOrder.shippingAddress?.email }}</p>
+        <p><strong>Phone:</strong> {{ selectedOrder.shippingAddress?.phone }}</p>
+        <p><strong>Address:</strong> {{ selectedOrder.shippingAddress?.line1 }}, {{ selectedOrder.shippingAddress?.city }} - {{ selectedOrder.shippingAddress?.pincode }}</p>
+        <p><strong>Date:</strong> {{ (selectedOrder.createdAt || selectedOrder.orderTime) | date:'medium' }}</p>
+        <p><strong>Quantity:</strong> {{ selectedOrder.quntity }}</p>
+        <p><strong>Unit Price:</strong> ₹{{ selectedOrder.unitPrice }}</p>
+        <p><strong>Total Amount:</strong> ₹{{ selectedOrder.amount }}</p>
+        <p><strong>Payment Mode:</strong> {{ selectedOrder.payment }}</p>
+        <p><strong>Current Status:</strong> <span class="status-badge" [ngClass]="(selectedOrder.status || '').toLowerCase()">{{ selectedOrder.status }}</span></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

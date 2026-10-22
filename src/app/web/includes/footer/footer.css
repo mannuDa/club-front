@@ -1,0 +1,229 @@
+    .footer {
+      background-color: #111E38;
+      color: #FAF8F5;
+      padding: 4rem 4rem 1.5rem 4rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .bird-icon {
+      width: 42px;
+      height: 42px;
+      color: #111E38;
+    }
+    .footer-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-col h4 {
+      font-size: 0.9rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #C19A6B;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* Logo & Brand */
+    .brand-col .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .bird-icon {
+      width: 32px;
+      height: 32px;
+      color: #C19A6B;
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #FFFFFF;
+    }
+    .brand-tagline {
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      color: #C19A6B;
+    }
+
+    /* Contact Details */
+    .contact-info {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .contact-info li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: #A0AAB8;
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+    }
+    .contact-info a {
+      color: #A0AAB8;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .contact-info a:hover {
+      color: #C19A6B;
+    }
+
+    /* Navigation Links */
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+    .footer-links a {
+      color: #A0AAB8;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: #FFFFFF;
+    }
+
+    /* Under Footer Bar */
+    .under-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2rem;
+      font-size: 0.75rem;
+      color: #7A869A;
+    }
+    .under-footer p {
+      margin: 0;
+      line-height: 1.5;
+    }
+    .under-footer small {
+      color: #C19A6B;
+    }
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+    .social-links a {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #FAF8F5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 0.7rem;
+      font-weight: bold;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .social-links a:hover {
+      background-color: #C19A6B;
+      color: #111E38;
+    }
+
+    /* Mobile Responsive */
+/* Mobile View Fix for Useful Links and Help & Info Side-by-Side */
+@media (max-width: 768px) {
+  /* Fix Base Container */
+  .footer {
+    width: 100% !important;
+    padding: 1.5rem 1rem !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .footer-container {
+    display: grid !important;
+    grid-template-columns: 1.8fr 1fr 1fr !important;
+    gap: 1rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-bottom: 1.5rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Contact Row: Email and Phone Left-Right Align */
+  .contact-info {
+    padding-left: 0 !important;
+    list-style: none !important;
+  }
+
+  .contact-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+  }
+
+  .contact-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+  }
+
+  /* Typography */
+  .footer h4 {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .footer a, 
+  .footer span, 
+  .footer p {
+    font-size: 0.7rem !important;
+    line-height: 1.4 !important;
+    word-break: break-all !important;
+  }
+
+  /* Under Footer Fix & Centering */
+  .under-footer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding-top: 1.2rem !important;
+    gap: 0.8rem !important;
+    width: 100% !important;
+  }
+
+  .under-footer p {
+    margin: 0 !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+  }
+
+  .under-footer small {
+    display: block !important;
+    color: #C19A6B !important;
+    text-align: center !important;
+    margin-top: 4px !important;
+  }
+
+  .social-links {
+    display: flex !important;
+    gap: 12px !important;
+    justify-content: center !important;
+  }
+
+  .bird-icon {
+      width: 22px;
+      height: 22px;
+      color: #111E38;
+  }   
+}

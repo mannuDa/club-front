@@ -1,0 +1,313 @@
+
+/* Mobile Styles */
+/* Mobile Overrides (Under 900px) */
+@media (max-width: 900px) {
+  
+  /* Header Layout Adjustment */
+  .header {
+    padding: 0.8rem 1.2rem !important;
+    position: relative;
+  }
+
+  /* Force Hamburger Button to appear cleanly in action icons row */
+  .menu-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.3rem;
+  }
+
+  /* Force Links to stay HIDDEN until toggle is clicked */
+  .nav-links {
+    display: none !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background-color: #FAF8F5 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 1.5rem 0 !important;
+    gap: 1.2rem !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    border-top: 1px solid #EAE3D9 !important;
+    z-index: 9999 !important;
+  }
+
+  /* Display Links ONLY when toggled open */
+  .nav-links.is-open {
+    display: flex !important;
+  }
+}
+
+
+    .header {
+  position: relative; /* Absolute positioning relative to header */
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 4rem;
+  background-color: #FAF8F5;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bird-icon {
+  width: 42px;
+  height: 42px;
+  color: #111E38;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #111E38;
+}
+
+.brand-tagline {
+  font-size: 0.6rem;
+  letter-spacing: 2.5px;
+  color: #C19A6B;
+  font-weight: 600;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #2C2C2C;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #C19A6B;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 4px;
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: #111E38;
+}
+
+.badge {
+  position: absolute;
+  top: 0px;
+  right: -2px;
+  background-color: #C19A6B;
+  color: white;
+  font-size: 0.65rem;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Desktop pe Menu Toggle Hide rahega */
+.menu-toggle {
+  display: none;
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.collections-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arrow {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+
+  min-width: 200px;
+
+  background: #fff;
+  padding: 12px 0;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+
+  transition: all 0.2s ease;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-dropdown:hover .arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px 20px;
+
+  text-decoration: none;
+  color: #222;
+
+  white-space: nowrap;
+}
+
+.dropdown-menu a:hover {
+  background: #f5f5f5;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.search-box {
+  position: absolute;
+  right: 0;
+  top: 50%;
+
+  width: 0;
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(-50%);
+
+  transition:
+    width 0.25s ease,
+    opacity 0.2s ease;
+
+  overflow: hidden;
+}
+
+.search-box.open {
+  width: 250px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.search-box input {
+  width: 100%;
+  height: 40px;
+
+  padding: 0 40px 0 15px;
+
+  border: 1px solid #ddd;
+  border-radius: 4px;
+
+  outline: none;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  border: none;
+  background: none;
+
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .search-box {
+    position: fixed;
+
+    top: 70px;
+    left: 15px;
+    right: 15px;
+
+    width: auto;
+    transform: none;
+  }
+
+  .search-box.open {
+    width: auto;
+  }
+
+  .search-box input {
+    height: 44px;
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,13 @@
+<div class="account-tabs-container">
+  <div class="tabs-nav">
+    <button [class.active]="activeTab === 'Wishlist'" (click)="activeTab = 'Wishlist'">My Wishlist</button>
+    <button [class.active]="activeTab === 'Cart'" (click)="activeTab = 'Cart'">My Cart</button>
+    <button [class.active]="activeTab === 'Order'" (click)="activeTab = 'Order'">My Order</button>
+  </div>
+
+  <div class="tabs-content">
+    <app-my-wishlist *ngIf="activeTab === 'Wishlist'"></app-my-wishlist>
+    <app-my-cart *ngIf="activeTab === 'Cart'"></app-my-cart>
+    <app-my-orders *ngIf="activeTab === 'Order'"></app-my-orders>
+  </div>
+</div>

@@ -1,0 +1,490 @@
+
+
+
+    :host {
+      display: block;
+      background-color: #FAF8F5;
+      color: #111E38;
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    /* GLOBAL CONTAINER & HEADINGS */
+    .container {
+      max-width: auto;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .sub-heading, .sub-title, .section-badge {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: #C19A6B;
+      font-weight: 600;
+      text-transform: uppercase;
+      display: block;
+    }
+    .text-center { text-align: center; }
+
+    /* BANNER AREA */
+    .about-page-heading {
+      background: linear-gradient(135deg, #111E38 0%, #1A2B4C 100%);
+      color: #FAF8F5;
+      text-align: center;
+      padding: 5rem 1.5rem;
+    }
+    .about-page-heading h2 {
+      font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+      margin: 0.5rem 0;
+      font-weight: 500;
+    }
+    .center-bird img {
+      width: 24px;
+      height: 24px;
+      color: #c19a6b;
+      margin: 0.5rem 0;
+    }
+    .about-page-heading p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      color: #A0AAB8;
+      margin: 0;
+    }
+
+    /* ABOUT US SECTION */
+    .about-us {
+      padding: 5rem 0;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      align-items: flex-start;
+      margin-bottom: 5rem;
+    }
+    .left-image img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      object-fit: cover;
+    }
+    .right-content h4 {
+      font-size: clamp(1.8rem, 3vw, 2.3rem);
+      margin: 0.5rem 0 1.5rem;
+      color: #111E38;
+    }
+    .lead-text, .description-text, .closing-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: #4A5568;
+      margin-bottom: 1.25rem;
+    }
+    .vision-box {
+      background: #FFFFFF;
+      padding: 1.5rem;
+      border-left: 3px solid #C19A6B;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .vision-box h5 {
+      font-size: 1.1rem;
+      margin-top: 0;
+      margin-bottom: 0.8rem;
+      color: #111E38;
+    }
+    .vision-box p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #555;
+      margin-bottom: 0.75rem;
+    }
+    .vision-box p:last-child { margin-bottom: 0; }
+
+    /* QUOTE CARD */
+    .quote-card {
+      background: #111E38;
+      color: #FAF8F5;
+      padding: 1.5rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .quote-icon {
+      font-size: 3rem;
+      color: #C19A6B;
+      line-height: 1;
+    }
+    .quote-card p {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      font-size: 1rem;
+    }
+    .quote-card a {
+      color: #C19A6B;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .quote-card a:hover { text-decoration: underline; }
+
+    .social-links {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .social-links a {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #111E38;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .social-links a:hover { background: #C19A6B; }
+
+    /* R&D SECTION */
+    .rd-section {
+      background: #FFFFFF;
+      padding: 3rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    .rd-header h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .rd-header p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.92rem;
+      color: #555;
+      line-height: 1.65;
+    }
+    .featured-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin: 2.5rem 0;
+    }
+    .feature-card {
+      background: #FAF8F5;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #EAE5DE;
+    }
+    .icon-wrap {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: #C19A6B;
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+    }
+    .feature-card h5 {
+      font-size: 1.05rem;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+    .feature-card p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      color: #666;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .rd-footer h4 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+    .rd-footer p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* OUR TEAM SECTION */
+    .our-team {
+      padding: 5rem 0;
+      background: #FAF8F5;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .team-item {
+      background: #FFFFFF;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    }
+    .team-item .thumb {
+      position: relative;
+      height: 320px;
+      overflow: hidden;
+    }
+    .team-item .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hover-effect {
+      position: absolute;
+      inset: 0;
+      background: rgba(17, 30, 56, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .team-item:hover .hover-effect { opacity: 1; }
+    .hover-effect ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      gap: 0.75rem;
+    }
+    .hover-effect a {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      color: #111E38;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .hover-effect a:hover { background: #C19A6B; color: #FFF; }
+    .team-item .down-content {
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .team-item h4 {
+      margin: 0 0 0.25rem;
+      font-size: 1.2rem;
+    }
+    .team-item span {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      color: #C19A6B;
+      font-weight: 600;
+    }
+
+   
+
+    /* SUBSCRIBE SECTION */
+    .subscribe {
+      background: #111E38;
+      color: #FAF8F5;
+      padding: 4rem 0;
+    }
+    .subscribe-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .subscribe .sub-heading { color: #C19A6B; }
+    .subscribe h2 {
+      color: #FAF8F5;
+      font-size: 1.6rem;
+      margin: 0.5rem 0;
+    }
+    .subscribe p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      color: #A0AAB8;
+    }
+    .form-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    .input-group { flex: 1; }
+    .input-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      border: 1px solid #2C3E61;
+      background: #1A2B4C;
+      color: #FFF;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #C19A6B;
+    }
+    .btn-subscribe {
+      background: #C19A6B;
+      color: #FFF;
+      border: none;
+      padding: 0 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-subscribe:hover { background: #A88152; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.78rem;
+    }
+    .info-list li {
+      margin-bottom: 1rem;
+    }
+    .info-list strong {
+      display: block;
+      color: #C19A6B;
+      margin-bottom: 0.2rem;
+    }
+    .info-list span {
+      color: #CBD5E0;
+    }
+    .social-links-inline a {
+      color: #FAF8F5;
+      text-decoration: underline;
+    }
+
+
+/* STORES CAROUSEL SECTION */
+.our-services {
+  padding: 5rem 0;
+  background: #FFFFFF;
+  width: 100%;
+  overflow: hidden; /* Fix: Horizontal overflow ko rokega */
+}
+
+.custom-carousel-wrapper {
+  position: relative;
+  margin-top: 3rem;
+  padding: 0 3rem;
+  max-width: 100%;
+  overflow: hidden; /* Fix: Carousel bleed ko contain karega */
+}
+.custom-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #111E38;
+  color: #FFF;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.prev-btn { left: 0; }
+.next-btn { right: 0; }
+
+.service-item {
+  background: #FAF8F5;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin: 0.5rem;
+}
+.store-img-wrap {
+  height: 200px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.store-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.service-item h4 {
+  font-size: 1.1rem;
+  margin: 0.5rem 0 0.25rem;
+}
+.service-item p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+.custom-nav-btn:hover { background: #C19A6B; }
+
+
+/* Fix: Owl Carousel DOM Bleed Overrides */
+/* Container Fix */
+.our-services {
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.custom-carousel-wrapper {
+  position: relative;
+  margin-top: 3rem;
+  padding: 0 3rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Force Owl Carousel internals to strictly stay inside container */
+::ng-deep .owl-carousel {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .owl-carousel .owl-stage-outer {
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .owl-carousel .owl-stage {
+  display: flex !important;
+}
+
+
+
+
+        /* RESPONSIVE DESIGN */
+    @media (max-width: 992px) {
+      .about-grid, .subscribe-grid {
+        grid-template-columns: 1fr;
+      }
+      .featured-cards {
+        grid-template-columns: 1fr;
+      }
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .rd-section { padding: 1.5rem; }
+      .team-grid { grid-template-columns: 1fr; }
+      .form-row { flex-direction: column; }
+      .info-grid { grid-template-columns: 1fr; }
+      .custom-carousel-wrapper { padding: 0; }
+      .custom-nav-btn { display: none; }
+    }

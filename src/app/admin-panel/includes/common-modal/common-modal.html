@@ -1,0 +1,21 @@
+<div class="modal-backdrop" *ngIf="isOpen"></div>
+
+<div class="modal d-block" tabindex="-1" *ngIf="isOpen">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+
+    <div class="modal-content animate-modal">
+
+      <div class="modal-header">
+        <h5 class="modal-title">{{ title }}</h5>
+
+        <button class="btn-close" (click)="close()"></button>
+      </div>
+
+      <div class="modal-body">
+        <ng-content></ng-content>
+      </div>
+
+    </div>
+
+  </div>
+</div>

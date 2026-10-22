@@ -1,0 +1,91 @@
+<aside class="app-sidebar shadow-sm">
+  <div class="h-100 d-flex flex-column">
+
+    <!-- Logo Section -->
+    <div class="logo-box px-4 py-3 border-bottom">
+      <a routerLink="/admin" class="d-flex align-items-center gap-2 text-decoration-none">
+ <div class="logo">
+      <img src="assets/circle-logo.png" alt="Club Avis Logo" class="bird-icon">
+
+    
+    <div class="brand-text">
+      <span class="brand-name">CLUB AVIS</span>
+    </div>
+
+  </div>
+      </a>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="sidebar-menu flex-grow-1 overflow-auto py-3 px-3 ">
+      <ul class="nav nav-pills flex-column gap-1">
+
+        <li class="menu-title text-uppercase fs-8 text-muted fw-bold px-3 mb-2">Main Menu</li>
+
+        <!-- Dashboard Collapsible -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center justify-content-between rounded-3 px-3 py-2 text-secondary" 
+             data-bs-toggle="collapse" 
+             href="#sidebarDashboards" 
+             role="button" 
+             aria-expanded="false">
+            <span class="d-flex align-items-center gap-2.5">
+              <i class="mdi mdi-view-dashboard-outline fs-5"></i>
+              <span class="fw-medium">Dashboard</span>
+            </span>
+            <i class="mdi mdi-chevron-down arrow-icon"></i>
+          </a>
+          <div class="collapse mt-1" id="sidebarDashboards">
+            <ul class="nav nav-pills flex-column ps-3 gap-1">
+              <li class="nav-item">
+                <a routerLink="/admin/dashboard/analytical" routerLinkActive="active" class="nav-link sub-link rounded-2 py-1.5 px-3 fs-7 text-secondary">
+                  Analytical
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/admin/dashboard/ecommerce" routerLinkActive="active" class="nav-link sub-link rounded-2 py-1.5 px-3 fs-7 text-secondary">
+                  E-commerce
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="menu-title text-uppercase fs-8 text-muted fw-bold px-3 my-2">Management</li>
+
+        <!-- Stores Link -->
+        <li class="nav-item">
+          <a routerLink="/admin/stores" routerLinkActive="active" class="nav-link d-flex align-items-center gap-2.5 rounded-3 px-3 py-2 text-secondary">
+            <i class="mdi mdi-store-outline fs-5"></i>
+            <span class="fw-medium">Stores</span>
+          </a>
+        </li>
+        <!-- Stores Link -->
+        <li class="nav-item">
+          <a routerLink="/admin/orders" routerLinkActive="active" class="nav-link d-flex align-items-center gap-2.5 rounded-3 px-3 py-2 text-secondary">
+            <i class="mdi mdi-store-outline fs-5"></i>
+            <span class="fw-medium">Orders</span>
+          </a>
+        </li>
+
+        <!-- Cloths Link -->
+        <li class="nav-item">
+          <a routerLink="/admin/cloths" routerLinkActive="active" class="nav-link d-flex align-items-center gap-2.5 rounded-3 px-3 py-2 text-secondary">
+            <i class="mdi mdi-hanger fs-5"></i>
+            <span class="fw-medium">Cloths</span>
+          </a>
+        </li>
+
+        <!-- Members Link -->
+        <li class="nav-item">
+          <a routerLink="/admin/members" routerLinkActive="active" class="nav-link d-flex align-items-center gap-2.5 rounded-3 px-3 py-2 text-secondary">
+            <i class="mdi mdi-account-group-outline fs-5"></i>
+            <span class="fw-medium">Members</span>
+          </a>
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
+</aside>

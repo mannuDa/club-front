@@ -1,0 +1,28 @@
+<div class="wishlist-container">
+  <h2>My Wishlist</h2>
+  
+  <div *ngIf="loading" class="loading-text">Loading your wishlist...</div>
+
+  <div *ngIf="!loading && wishlistItems.length === 0" class="empty-state">
+    <p>Your wishlist is currently empty.</p>
+    <button class="shop-btn" routerLink="/products">Explore Products</button>
+  </div>
+
+  <div class="product-grid" *ngIf="!loading && wishlistItems.length > 0">
+    <div class="product-card" *ngFor="let item of wishlistItems">
+      <div class="image-wrapper" (click)="goToDetails(item._id || item.id)">
+        
+        <img [src]="imageURL + (item.imagesPath?.[0] ?? '')" alt="Product">
+        <button class="remove-btn" title="Remove" (click)="$event.stopPropagation(); toggleWishlist(item._id || item.id)">
+          ❌
+        </button>
+      </div>
+      
+      <div class="product-info">
+        <h3>{{ item.name }}</h3>
+        <p class="price">₹{{ item.selling_price || item.price }}</p>
+        <button class="add-to-cart-btn" (click)="toggleCartlist(item)">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
