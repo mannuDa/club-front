@@ -5,8 +5,11 @@ import { HttpServiceService } from '../../services/http-service.service';
 import { PaginationService, PageResult } from '../../services/pagination.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService, NgxSpinnerModule } from 'ngx-spinner';
-// import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
+// import * as XLSX from 'xlsx';
+// SheetJS (xlsx) declaration to prevent import/bundling issues
+// declare var XLSX: any;
+declare var XLSX: any;
 
 @Component({
   selector: 'products',
@@ -39,6 +42,8 @@ export class LowerCloths implements OnInit {
   selectedProductIndex!: number;
   selectedFilesArray: File[] = [];
   fileSizeError: string[] = [];
+  clothsSizes: any[] = [];
+  availableSubtypes: string[] = [];
   readonly MAX_SIZE_MB = 2;
   readonly MAX_SIZE_BYTES = 2 * 1024 * 1024;
   upperSizes: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
@@ -47,20 +52,19 @@ export class LowerCloths implements OnInit {
     '#000000', '#FFFFFF', '#FF0000', '#00FF00',
     '#0000FF', '#FFFF00', '#800080', '#GRAY'
   ];
-  clothsSizes: any[] = [];
-  // Define your hierarchical options based on your structure
-upperwearOptions = [
-  {name: 'Shirts', subtypes: ['Casual Shirts', 'Formal Shirts', 'Partywear Shirts'] },
-  {name: 'T-Shirts', subtypes: ['Polo T-Shirts', 'Round Neck T-Shirts', 'Half Sleeve', 'Full Sleeve'] },
-  {name: 'Jacket', subtypes: ['Full Sleeve', 'Sleeveless'] },
-  {name: 'Sweater', subtypes: ['Sleeveless', 'Full Sleeve'] }
-];
-lowerwearOptions = [ 
-  {name: 'Trousers', subtypes: ['Formal Trousers', 'Casual Trousers'] },
-  {name: 'Jeans', subtypes: ['regular', 'Casual Jeans'] }
-];
 
-  availableSubtypes: string[] = [];
+  // Define your hierarchical options based on your structure
+  upperwearOptions = [
+    { name: 'Shirts', subtypes: ['Casual Shirts', 'Formal Shirts', 'Partywear Shirts'] },
+    { name: 'T-Shirts', subtypes: ['Polo T-Shirts', 'Round Neck T-Shirts', 'Half Sleeve', 'Full Sleeve'] },
+    { name: 'Jacket', subtypes: ['Full Sleeve', 'Sleeveless'] },
+    { name: 'Sweater', subtypes: ['Sleeveless', 'Full Sleeve'] }
+  ];
+  lowerwearOptions = [ 
+    { name: 'Trousers', subtypes: ['Formal Trousers', 'Casual Trousers'] },
+    { name: 'Jeans', subtypes: ['regular', 'Casual Jeans'] }
+  ];
+
   editorConfig = {
     placeholder: 'Write your content here...',
     tabsize: 2,
@@ -73,7 +77,13 @@ lowerwearOptions = [
       ['insert', ['link', 'picture', 'video']]
     ]
   };
+
+  /* Bulk Excel Upload State */
+  bulkParsedProducts: any[] = [];
+  invalidBulkRowsCount: number = 0;
+
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('bulkExcelInput') bulkExcelInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -82,18 +92,20 @@ lowerwearOptions = [
     private spinner: NgxSpinnerService,
     private toast: ToastrService,
     private pagination: PaginationService
-  ) { this.imageURL = this.apiurl.imageBaseURL; }
+  ) { 
+    this.imageURL = this.apiurl.imageBaseURL; 
+  }
 
   ngOnInit(): void {
     this.updatePage();
     this.getCloths();
     this.initializeSaveFormValidations();
   }
+
   getCloths() {
     this.spinner.show();
     this.apiurl.get('products').subscribe({
       next: (data: any) => {
-        // 1) pehle data assign karo, 2) phir view refresh karo
         this.allCloths = [...data].sort((a: any, b: any) => (b.name || '').localeCompare(a.name || ''));
         this.updatePage();
         this.spinner.hide();
@@ -102,7 +114,7 @@ lowerwearOptions = [
       error: (err: any) => {
         this.spinner.hide();
         this.toast.error('Error fetching products!');
-        console.error("API me lafda ho gaya:", err);
+        console.error("API error:", err);
       }
     });
   }
@@ -110,7 +122,7 @@ lowerwearOptions = [
   /* ---------- Pagination ---------- */
   updatePage(): void {
     this.pageData = this.pagination.paginate(this.allCloths, this.currentPage, this.pageSize);
-    this.currentPage = this.pageData.page; // keeps the page valid, e.g. after deleting the last row of the last page
+    this.currentPage = this.pageData.page;
   }
 
   goToPage(page: number | string): void {
@@ -129,18 +141,15 @@ lowerwearOptions = [
     this.selectedColor = color;
   }
 
-  /* Garment type options depend on the chosen category */
   get garmentOptions() {
     return this.selectedCategory === 'lower' ? this.lowerwearOptions : this.upperwearOptions;
   }
 
-  /* Rebuild the subtype list for a category + garment type (also used when editing) */
   private refreshSubtypes(category: string, gstyle: string): void {
     const options = category === 'lower' ? this.lowerwearOptions : this.upperwearOptions;
     this.availableSubtypes = options.find(item => item.name === gstyle)?.subtypes ?? [];
   }
 
-  /* Garment type (gstyle) changed -> load its subtypes and clear the old subtype */
   onGarmentTypeChange(event: Event): void {
     const selected = (event.target as HTMLSelectElement).value;
     this.refreshSubtypes(this.selectedCategory, selected);
@@ -149,17 +158,18 @@ lowerwearOptions = [
 
   toggleProductSelection(product: any, event: any): void {
     const checked = event.target.checked;
-
-    if (checked) {  const alreadySelected = this.selectedProducts.some(     item => item.id === product.id   );
-      if (!alreadySelected) {   this.selectedProducts.push(product);   } } 
-      else {  this.selectedProducts = this.selectedProducts.filter(  item => item.id !== product.id        );  }
+    if (checked) {
+      const alreadySelected = this.selectedProducts.some(item => item.id === product.id);
+      if (!alreadySelected) { this.selectedProducts.push(product); } 
+    } else {
+      this.selectedProducts = this.selectedProducts.filter(item => item.id !== product.id);
+    }
   }
 
   isSelected(productId: any): boolean {
-    return this.selectedProducts.some(  product => product.id === productId  );
+    return this.selectedProducts.some(product => product.id === productId);
   }
 
-  /* Header checkbox works on the rows of the current page; selections on other pages are kept */
   toggleSelectAll(event: any): void {
     const checked = event.target.checked;
     const pageItems: any[] = this.pageData?.items || [];
@@ -173,63 +183,63 @@ lowerwearOptions = [
       this.selectedProducts = this.selectedProducts.filter(product => !pageIds.has(product.id));
     }
   }
+
   isAllSelected(): boolean {
     const pageItems: any[] = this.pageData?.items || [];
     return pageItems.length > 0 && pageItems.every(product => this.isSelected(product.id));
   }
 
-
   openDiscountModal(): void {
-
     if (this.selectedProducts.length === 0) {
       return;
     }
-
     const modalElement = document.getElementById('discountModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
     }
   }
-applyDiscount(): void {
 
-  if (!this.discountValue || this.discountValue <= 0) { return;  }
-  const selectedProductIds = this.selectedProducts.map( product => product.id);
-  if (selectedProductIds.length === 0) {  return; }
-  this.spinner.show();
-  this.apiurl.post( 'products/discount', { productIds: selectedProductIds,  discountValue: this.discountValue    }
-  ).subscribe({
-    next: (res: any) => {
-      this.spinner.hide();
-      this.getCloths();
-      this.selectedProducts = [];
-      this.discountValue = 0;
-      const modalElement = document.getElementById('discountModal');
-      if (modalElement) {   const modal = bootstrap.Modal.getInstance(modalElement);
-        if (modal) {   modal.hide(); }
+  applyDiscount(): void {
+    if (!this.discountValue || this.discountValue <= 0) { return; }
+    const selectedProductIds = this.selectedProducts.map(product => product.id);
+    if (selectedProductIds.length === 0) { return; }
+
+    this.spinner.show();
+    this.apiurl.post('products/discount', { 
+      productIds: selectedProductIds, 
+      discountValue: this.discountValue 
+    }).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
+        this.getCloths();
+        this.selectedProducts = [];
+        this.discountValue = 0;
+        const modalElement = document.getElementById('discountModal');
+        if (modalElement) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) { modal.hide(); }
+        }
+        this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.toast.success('Discount successfully applied!');
+        }, 300);
+      },
+      error: (err) => {
+        this.spinner.hide();
+        this.toast.error('Error applying discount!');
+        console.error('Discount update error:', err);
       }
-      this.cdr.detectChanges();
+    });
+  }
 
-      // Alert AFTER modal hide
-      setTimeout(() => {
-        this.toast.success('Discount successfully applied!');
-      }, 300);
-
-    },
-
-    error: (err) => {
-      this.spinner.hide();
-      this.toast.error('Error applying discount!');
-      console.error('Discount update error:', err);
-    }
-
-  });
-}
   isSomeSelected(): boolean {
     const pageItems: any[] = this.pageData?.items || [];
     const selectedOnPage = pageItems.filter(product => this.isSelected(product.id)).length;
     return selectedOnPage > 0 && selectedOnPage < pageItems.length;
   }
+
   triggerModal() {
     const modalEl = document.getElementById('UpdateclothModal');
     if (!modalEl) return;
@@ -249,7 +259,6 @@ applyDiscount(): void {
     modal?.hide();
   }
 
-
   initializeSaveFormValidations() {
     this.createForm = this.fb.group({
       category: ['', Validators.required],
@@ -261,7 +270,7 @@ applyDiscount(): void {
       sleeve_type: [''],
       listing_price: ['', Validators.required],
       selling_price: ['', Validators.required],
-      discountPercent: [0], // derived from listing vs selling price (see syncDiscount), never typed in
+      discountPercent: [0],
       gstyle: ['', Validators.required],
       subtypes: ['', Validators.required],
       collection: ['', Validators.required],
@@ -273,7 +282,6 @@ applyDiscount(): void {
       sizes: [[], Validators.required],
     });
 
-    // Whenever either price changes, refresh the discountPercent control
     ['listing_price', 'selling_price'].forEach(name =>
       this.createForm.get(name)?.valueChanges.subscribe(() => this.syncDiscount())
     );
@@ -287,7 +295,6 @@ applyDiscount(): void {
     return this.createForm?.get('sizes')?.value || [];
   }
 
-  /** Discount % from MRP vs selling price; null while the two prices don't give a valid discount. */
   private calcDiscount(): number | null {
     const listing = Number(this.createForm?.get('listing_price')?.value);
     const sellingRaw = this.createForm?.get('selling_price')?.value;
@@ -297,12 +304,10 @@ applyDiscount(): void {
     return Math.round((1 - selling / listing) * 100);
   }
 
-  /* Live discount shown in the modal (listing vs selling price) */
   get discountPercent(): number | null {
     return this.calcDiscount();
   }
 
-  /** Writes the calculated discount into the discountPercent control so saveCloth() sends it to the API. */
   private syncDiscount(): void {
     this.createForm?.get('discountPercent')?.setValue(this.calcDiscount() ?? 0, { emitEvent: false });
   }
@@ -312,7 +317,6 @@ applyDiscount(): void {
     return !!control && control.invalid && (control.touched || control.dirty);
   }
 
-  /* Exactly Aapka Original onCategoryChange Function */
   onCategoryChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const categoryValue = selectElement.value;
@@ -327,43 +331,38 @@ applyDiscount(): void {
     this.availableSubtypes = [];
   }
 
-  /* Exactly Aapka Original onCategoryChange Function */
-
-
   toggleSize(size: string | number): void {
     const sizes = [...this.selectedSizes];
     const index = sizes.indexOf(size);
 
     if (index > -1) { sizes.splice(index, 1); } 
-    else { sizes.push(size);}
+    else { sizes.push(size); }
 
     this.createForm.patchValue({ sizes });
   }
 
-  isSizeSelected(size: string | number): boolean {  return this.selectedSizes.includes(size); }
-
-  /* Drag & Drop */
-  allowDrop(event: DragEvent) {   event.preventDefault(); }
-  onDrop(event: DragEvent) {
-    event.preventDefault();
-    if (event.dataTransfer?.files) {  this.handleFiles(event.dataTransfer.files); }
+  isSizeSelected(size: string | number): boolean { 
+    return this.selectedSizes.includes(size); 
   }
 
-  /* File Select */
+  allowDrop(event: DragEvent) { event.preventDefault(); }
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer?.files) { this.handleFiles(event.dataTransfer.files); }
+  }
+
   onFilesSelected(event: any) {
     const files: FileList = event.target.files;
     if (!files || files.length === 0) return;
-
     this.handleFiles(files);
   }
 
-  /* 💡 ONLY FIX HERE: selectedFiles ke sath selectedFilesArray me bhi push kar diya */
   handleFiles(files: FileList) {
-    this.fileSizeError = []; // Every upload turn pe previous errors clear honge
+    this.fileSizeError = [];
     Array.from(files).forEach((file: File) => {
       if (file.size > this.MAX_SIZE_BYTES) {
         this.fileSizeError.push(`File "${file.name}" exceeds the 2MB size limit.`);
-        return; // Skip this file and check next files
+        return;
       }
       if (!file.type.startsWith("image/")) return;
       this.selectedFiles.push(file);
@@ -373,7 +372,6 @@ applyDiscount(): void {
         this.imagePreviews.push(reader.result as string);
         this.cdr.detectChanges();
       };
-
       reader.readAsDataURL(file);
     });
   }
@@ -382,12 +380,11 @@ applyDiscount(): void {
     const removedImage = this.imagePreviews[index];
     if (!removedImage) return;
 
-    // Existing image detect karo
     const isExistingImage = typeof removedImage === 'string' && !removedImage.startsWith('data:image');
 
-    if (isExistingImage) { this.removedImages.push(removedImage); }
-    else {
-      // New uploaded image hai
+    if (isExistingImage) { 
+      this.removedImages.push(removedImage); 
+    } else {
       const newImageIndex = this.imagePreviews.slice(0, index)
         .filter(img => typeof img === 'string' && img.startsWith('data:image'))
         .length;
@@ -399,11 +396,11 @@ applyDiscount(): void {
     this.imagePreviews.splice(index, 1);
   }
 
-  resetFileInput() { if (this.fileInput) { this.fileInput.nativeElement.value = ''; } }
+  resetFileInput() { 
+    if (this.fileInput) { this.fileInput.nativeElement.value = ''; } 
+  }
 
-  /* Exactly Aapka Original openModal Function */
   openModal(product?: any) {
-
     this.imagePreviews = [];
     this.selectedFilesArray = [];
     this.selectedFiles = [];
@@ -412,9 +409,7 @@ applyDiscount(): void {
     this.createForm.markAsUntouched();
 
     if (product !== undefined) {
-
       this.isEditMode = true;
-      // this.selectedProductIndex = index;
       this.currentProductId = product._id || product.id;
 
       const category = product.category || '';
@@ -450,13 +445,12 @@ applyDiscount(): void {
         this.imagePreviews = [...product.imagesPath];
       }
     } else {
-
       this.isEditMode = false;
       this.currentProductId = '';
       this.createForm.reset({
         category: '',
         fashionType: '',
-        subtypes:  '',
+        subtypes: '',
         gstyle: '',
         name: '',
         fit_type: '',
@@ -484,11 +478,8 @@ applyDiscount(): void {
     this.triggerModal();
   }
 
-  /* Exactly Aapka Original saveCloth Function */
   saveCloth() {
-
-    this.syncDiscount(); // make sure the latest calculated discount is what gets sent
-    console.log('form data:', this.createForm);
+    this.syncDiscount();
     if (this.createForm.invalid) {
       this.createForm.markAllAsTouched();
       this.toast.error('Please fill in all required fields.');
@@ -500,7 +491,7 @@ applyDiscount(): void {
     Object.keys(this.createForm.controls).forEach(key => {
       if (key !== 'sizes') {
         const value = this.createForm.get(key)?.value;
-        if (value !== null && value !== undefined) {  formData.append(key, value);}
+        if (value !== null && value !== undefined) { formData.append(key, value); }
       }
     });
 
@@ -517,14 +508,10 @@ applyDiscount(): void {
       });
     }
     if (this.removedImages.length > 0) {
-
       formData.append('removedImages', JSON.stringify(this.removedImages));
-
-
     }
 
     if (this.isEditMode) {
-
       this.apiurl.put(`products/${this.currentProductId}`, formData).subscribe({
         next: (res: any) => {
           this.spinner.hide();
@@ -533,7 +520,6 @@ applyDiscount(): void {
           this.toast.success('Updated successfully applied!');
           this.cdr.detectChanges();
           document.getElementById('closeModalBtn')?.click();
-
         },
         error: (err) => {
           this.spinner.hide();
@@ -541,8 +527,7 @@ applyDiscount(): void {
           console.error(err);
         }
       });
-    }
-    else {
+    } else {
       this.apiurl.post('products', formData).subscribe({
         next: (res: any) => {
           this.spinner.hide();
@@ -569,8 +554,302 @@ applyDiscount(): void {
           this.getCloths();
           this.toast.success('Product deleted successfully!');
         },
-        error: (err) => { this.spinner.hide(); console.error(err); }
+        error: (err) => { 
+          this.spinner.hide(); 
+          console.error(err); 
+        }
       });
+    }
+  }
+
+  /* ========================================================
+   * BULK EXCEL UPLOAD WITH PREVIEW MODAL & TEMPLATE DOWNLOAD
+   * ======================================================== */
+async onBulkExcelUpload(event: Event): Promise<void> {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
+  if (!files || files.length === 0) return;
+
+  const file = files[0];
+  this.spinner.show();
+
+  try {
+    const XLSX = await import('xlsx');
+
+    const reader = new FileReader();
+
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      try {
+        const buffer = e.target?.result as ArrayBuffer;
+        const data = new Uint8Array(buffer);
+        
+        // SheetJS read
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        const rawRows: any[] = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+        if (!rawRows || rawRows.length === 0) {
+          this.spinner.hide();
+          this.toast.warning('Excel file khali hai!');
+          this.resetBulkFileInput();
+          return;
+        }
+
+        this.bulkParsedProducts = rawRows
+          .filter((row: any) => {
+            const pName = row['Product name'] || row['Name'] || row['name'];
+            const pModel = row['Model / SKU'] || row['Model'] || row['model'];
+            return Boolean(pName || pModel);
+          })
+          .map((row: any) => {
+            const name = String(row['Product name'] || row['Name'] || row['name'] || '').trim();
+            const model = String(row['Model / SKU'] || row['Model'] || row['model'] || '').trim();
+            const listingPrice = Number(row['Listing price'] || row['Listing Price'] || row['listing_price'] || 0);
+            const sellingPrice = Number(row['Selling price'] || row['Selling Price'] || row['selling_price'] || 0);
+
+            let discount = Number(row['Discount'] || row['discount'] || 0);
+            if (!discount && listingPrice > 0 && sellingPrice > 0) {
+              discount = Math.round((1 - sellingPrice / listingPrice) * 100);
+            }
+
+            let sizesVal: any[] = [];
+            const rawSizes = row['Sizes'] || row['sizes'];
+            if (typeof rawSizes === 'string' && rawSizes.trim()) {
+              sizesVal = rawSizes.split(',').map((s: string) => s.trim());
+            } else if (Array.isArray(rawSizes)) {
+              sizesVal = rawSizes;
+            }
+
+            const rawImages = String(row['Image Link'] || row['imagesPath'] || '').trim();
+            const imagesPath = rawImages 
+              ? rawImages.split(',').map((img: string) => img.trim()).filter(Boolean) 
+              : [];
+
+            return {
+              name,
+              model,
+              category: String(row['Category'] || row['category'] || '').toLowerCase().trim(),
+              fashionType: String(row['Fashion type'] || row['Fashion Type'] || '').trim(),
+              gstyle: String(row['Garment style'] || row['Garment Style'] || row['gstyle'] || '').trim(),
+              subtypes: String(row['Subtype'] || row['subtypes'] || '').trim(),
+              collection: String(row['Collection'] || row['collection'] || '').trim(),
+              listing_price: String(listingPrice),
+              selling_price: String(sellingPrice),
+              discount: discount >= 0 ? discount : 0,
+              sizes: sizesVal,
+              color: String(row['Colour'] || row['Color'] || row['color'] || '#000000').trim(),
+              gender: String(row['gender'] || row['Gender'] || 'male').toLowerCase().trim(),
+              fit_type: row['Fit type'] || row['Fit Type'] || row['fit_type'] || '',
+              cloth_type: row['Cloth type'] || row['Cloth Type'] || row['cloth_type'] || '',
+              neck_type: row['Neck type'] || row['Neck Type'] || row['neck_type'] || '',
+              sleeve_type: row['Sleeve type'] || row['Sleeve Type'] || row['sleeve_type'] || '',
+              pro_desc: row['Description'] || row['Description '] || row['pro_desc'] || '',
+              care_policy: row['Care instructions'] || row['Care Policy'] || '',
+              return_policy: row['Return policy'] || row['Return Policy'] || '',
+              shipping_policy: row['Shipping instructions'] || row['Shipping Policy'] || '',
+              imagesPath: imagesPath,
+              isValid: Boolean(name && model && listingPrice > 0 && sellingPrice > 0)
+            };
+          });
+
+        this.invalidBulkRowsCount = this.bulkParsedProducts.filter(p => !p.isValid).length;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+
+        this.openBulkPreviewModal();
+
+      } catch (innerErr) {
+        this.spinner.hide();
+        this.toast.error('Excel data parse karne me error aaya.');
+        console.error('Inner parsing error:', innerErr);
+        this.resetBulkFileInput();
+      }
+    };
+
+    reader.onerror = (readErr) => {
+      this.spinner.hide();
+      this.toast.error('File load nahi ho saki.');
+      console.error(readErr);
+      this.resetBulkFileInput();
+    };
+
+    reader.readAsArrayBuffer(file);
+
+  } catch (loadErr) {
+    this.spinner.hide();
+    this.toast.error('XLSX module load karne me error aaya.');
+    console.error('Dynamic import error:', loadErr);
+    this.resetBulkFileInput();
+  }
+}
+
+  openBulkPreviewModal(): void {
+    const modalEl = document.getElementById('bulkPreviewModal');
+    if (modalEl) {
+      let modal = bootstrap.Modal.getInstance(modalEl);
+      if (!modal) {
+        modal = new bootstrap.Modal(modalEl);
+      }
+      modal.show();
+    }
+  }
+
+  closeBulkPreviewModal(): void {
+    const modalEl = document.getElementById('bulkPreviewModal');
+    if (modalEl) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      modal?.hide();
+    }
+    this.resetBulkFileInput();
+  }
+
+  confirmBulkUpload(): void {
+    if (this.bulkParsedProducts.length === 0) return;
+
+    const validProducts = this.bulkParsedProducts.filter(p => p.isValid);
+
+    if (validProducts.length === 0) {
+      this.toast.error('Koi valid product nahi mila upload karne ke liye.');
+      return;
+    }
+
+    this.spinner.show();
+    this.apiurl.post('products/bulk', { products: validProducts }).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
+        this.closeBulkPreviewModal();
+        this.toast.success(`${validProducts.length} products successfully add ho gaye!`);
+        this.getCloths();
+        this.bulkParsedProducts = [];
+      },
+      error: (err: any) => {
+        this.spinner.hide();
+        this.toast.error('Bulk upload me error aaya! Backend check karein.');
+        console.error('Bulk upload error:', err);
+      }
+    });
+  }
+
+  removeBulkRow(index: number): void {
+    this.bulkParsedProducts.splice(index, 1);
+    this.invalidBulkRowsCount = this.bulkParsedProducts.filter(p => !p.isValid).length;
+    if (this.bulkParsedProducts.length === 0) {
+      this.closeBulkPreviewModal();
+    }
+  }
+
+  // downloadSampleExcel(): void {
+  //   if (typeof XLSX === 'undefined') {
+  //     this.toast.error('XLSX library load nahi hui.');
+  //     return;
+  //   }
+
+  //   const sampleData = [
+  //     {
+  //       'Name': 'Classic White Shirt',
+  //       'Category': 'upper',
+  //       'Fashion Type': 'Casual',
+  //       'Garment Style': 'Shirts',
+  //       'Subtype': 'Casual Shirts',
+  //       'Collection': 'Summer 2026',
+  //       'Model': 'MOD-SH-01',
+  //       'Listing Price': 1999,
+  //       'Selling Price': 1499,
+  //       'Sizes': 'M,L,XL',
+  //       'Color': '#FFFFFF',
+  //       'Gender': 'men',
+  //       'Fit Type': 'Slim',
+  //       'Cloth Type': 'Cotton',
+  //       'Neck Type': 'Collar',
+  //       'Sleeve Type': 'Full Sleeve',
+  //       'Description': 'Premium 100% cotton casual shirt'
+  //     },
+  //     {
+  //       'Name': 'Slim Fit Denim Jeans',
+  //       'Category': 'lower',
+  //       'Fashion Type': 'Denim',
+  //       'Garment Style': 'Jeans',
+  //       'Subtype': 'Casual Jeans',
+  //       'Collection': 'Winter 2026',
+  //       'Model': 'MOD-JN-99',
+  //       'Listing Price': 2999,
+  //       'Selling Price': 1999,
+  //       'Sizes': '30,32,34',
+  //       'Color': '#0000FF',
+  //       'Gender': 'men',
+  //       'Fit Type': 'Slim Fit',
+  //       'Cloth Type': 'Denim',
+  //       'Neck Type': '',
+  //       'Sleeve Type': '',
+  //       'Description': 'Stretchable dark blue denim'
+  //     }
+  //   ];
+
+  //   const worksheet = XLSX.utils.json_to_sheet(sampleData);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, 'Products_Sample');
+  //   XLSX.writeFile(workbook, 'Product_Bulk_Upload_Sample.xlsx');
+  // }
+
+  async downloadSampleExcel(): Promise<void> {
+  try {
+    const XLSX = await import('xlsx');
+
+        const sampleData = [
+      {
+        'Name': 'Classic White Shirt',
+        'Category': 'upper',
+        'Fashion Type': 'Casual',
+        'Garment Style': 'Shirts',
+        'Subtype': 'Casual Shirts',
+        'Collection': 'Summer 2026',
+        'Model': 'MOD-SH-01',
+        'Listing Price': 1999,
+        'Selling Price': 1499,
+        'Sizes': 'M,L,XL',
+        'Color': '#FFFFFF',
+        'Gender': 'men',
+        'Fit Type': 'Slim',
+        'Cloth Type': 'Cotton',
+        'Neck Type': 'Collar',
+        'Sleeve Type': 'Full Sleeve',
+        'Description': 'Premium 100% cotton casual shirt'
+      },
+      {
+        'Name': 'Slim Fit Denim Jeans',
+        'Category': 'lower',
+        'Fashion Type': 'Denim',
+        'Garment Style': 'Jeans',
+        'Subtype': 'Casual Jeans',
+        'Collection': 'Winter 2026',
+        'Model': 'MOD-JN-99',
+        'Listing Price': 2999,
+        'Selling Price': 1999,
+        'Sizes': '30,32,34',
+        'Color': '#0000FF',
+        'Gender': 'men',
+        'Fit Type': 'Slim Fit',
+        'Cloth Type': 'Denim',
+        'Neck Type': '',
+        'Sleeve Type': '',
+        'Description': 'Stretchable dark blue denim'
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Products_Sample');
+    XLSX.writeFile(workbook, 'Product_Bulk_Upload_Sample.xlsx');
+  } catch (err) {
+    console.error('XLSX load error:', err);
+    this.toast.error('XLSX library load nahi hui.');
+  }
+}
+  private resetBulkFileInput(): void {
+    if (this.bulkExcelInput) {
+      this.bulkExcelInput.nativeElement.value = '';
     }
   }
 }

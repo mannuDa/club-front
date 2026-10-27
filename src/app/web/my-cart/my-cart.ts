@@ -139,7 +139,7 @@ export class MyCart implements OnInit, OnDestroy {
       this.checkoutForm.markAllAsTouched();
       return;
     }
-
+    console.log('cart items', this.cartItems);
     this.errorMsg = '';
     this.isPaying = true;
 

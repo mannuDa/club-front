@@ -1,0 +1,48 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="handleBackdropClick($event)">
+  <div class="modal-container" role="dialog" aria-modal="true">
+    
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="product-preview">
+        <img 
+          [src]="product?.imagesPath?.[0] ? (imageBaseURL + product.imagesPath[0]) : (product?.image || 'assets/placeholder.jpg')" 
+          [alt]="product?.name" 
+          class="product-thumb">
+        <div class="product-info">
+          <h4 class="product-title">{{ product?.name }}</h4>
+          <span class="product-price">₹{{ product?.selling_price || product?.listing_price }}</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close" (click)="closeModal()">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <div class="size-header">
+        <span class="select-label">Select Size</span>
+      </div>
+
+      <!-- Size Options -->
+      <div class="size-grid">
+        <button 
+          type="button"
+          *ngFor="let s of product?.sizes"
+          class="size-pill"
+          [class.active]="selectedSize === s"
+          (click)="selectSize(s)">
+          {{ s }}
+        </button>
+      </div>
+
+      <p class="error-text" *ngIf="showError">Kripya ek size chunein.</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button type="button" class="btn-confirm" (click)="confirmSize()">
+        Confirm & Add
+      </button>
+    </div>
+
+  </div>
+</div>

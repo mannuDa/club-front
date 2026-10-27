@@ -189,6 +189,7 @@ get filteredBestsellers(): BestsellerProduct[] {
   }
 
   checkCartlist(productID: string): boolean {
+    
     return this.cartANDwish.checkCart(productID);
   }
 

@@ -7,7 +7,7 @@
 
         <h5 class="card-title mb-0">Cloths Data</h5>
 
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center flex-wrap gap-2">
 
           <!-- Selected Count -->
           <span *ngIf="selectedProducts.length > 0" class="badge bg-light text-primary border px-3 py-2">
@@ -22,7 +22,33 @@
             <span class="fw-semibold">Apply Discount</span>
           </button>
 
-          <!-- Add Product -->
+          <!-- Hidden Excel File Input -->
+          <input 
+            type="file" 
+            #bulkExcelInput 
+            class="d-none" 
+            accept=".xlsx, .xls, .csv" 
+            (change)="onBulkExcelUpload($event)"
+            (click)="$event.stopPropagation(); resetFileInput()" 
+          />
+
+          <!-- Download Sample Excel Template -->
+          <button class="btn btn-outline-secondary shadow-sm d-flex align-items-center gap-1 px-3 py-1.5" 
+            type="button" 
+            (click)="downloadSampleExcel()">
+            <i class="mdi mdi-download fs-18"></i>
+            <span class="fw-semibold">Sample Template</span>
+          </button>
+
+          <!-- Bulk Upload Button -->
+          <button class="btn btn-success shadow-sm d-flex align-items-center gap-1 px-3 py-1.5" 
+            type="button" 
+            (click)="bulkExcelInput.click()">
+            <i class="mdi mdi-file-excel fs-18"></i>
+            <span class="fw-semibold">Bulk Upload</span>
+          </button>
+
+          <!-- Add Product Single -->
           <button class="btn btn-primary shadow-sm d-flex align-items-center gap-1 px-3 py-1.5" (click)="openModal()"
             type="button">
             <i class="mdi mdi-plus fs-18"></i>
@@ -319,6 +345,7 @@
   </div>
 
 </div>
+
 <!-- Add / update product modal -->
 <div class="modal fade premium-modal" id="UpdateclothModal" tabindex="-1" role="dialog"
   aria-labelledby="clothModalTitle" aria-hidden="true">
@@ -646,6 +673,84 @@
         </div>
       </form>
 
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Upload Preview Modal -->
+<div class="modal fade" id="bulkPreviewModal" tabindex="-1" aria-labelledby="bulkPreviewModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bulkPreviewModalLabel">
+          Excel Data Preview (Total: {{ bulkParsedProducts.length }})
+        </h5>
+        <button type="button" class="btn-close" (click)="closeBulkPreviewModal()" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Validation Warning Alert -->
+        <div *ngIf="invalidBulkRowsCount > 0" class="alert alert-warning py-2 mb-3">
+          <strong>Warning:</strong> {{ invalidBulkRowsCount }} row(s) me missing name ya invalid price hai (red me highlighted). Sirf valid rows upload hongi ya unhe delete kar dein.
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Model / SKU</th>
+                <th>Category</th>
+                <th>Garment / Subtype</th>
+                <th>MRP</th>
+                <th>Selling Price</th>
+                <th>Discount</th>
+                <th>Sizes</th>
+                <th>Color</th>
+                <th>Gender</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of bulkParsedProducts; let i = index" [class.table-danger]="!item.isValid">
+                <td>{{ i + 1 }}</td>
+                <td><strong>{{ item.name || 'MISSING' }}</strong></td>
+                <td>{{ item.model || 'MISSING' }}</td>
+                <td><span class="badge bg-secondary">{{ item.category }}</span></td>
+                <td>{{ item.gstyle || 'N/A' }} - {{ item.subtypes || 'N/A' }}</td>
+                <td>₹{{ item.listing_price }}</td>
+                <td>₹{{ item.selling_price }}</td>
+                <td>{{ item.discount }}%</td>
+                <td>
+                  <span class="badge bg-light text-dark border me-1" *ngFor="let s of item.sizes">{{ s }}</span>
+                </td>
+                <td>
+                  <span [style.background-color]="item.color" class="d-inline-block rounded-circle border me-1" style="width: 14px; height: 14px; vertical-align: middle;"></span>
+                  {{ item.color }}
+                </td>
+                <td>{{ item.gender }}</td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeBulkRow(i)" title="Remove row">
+                    <i class="mdi mdi-delete-outline"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeBulkPreviewModal()">Cancel</button>
+        <button 
+          type="button" 
+          class="btn btn-success" 
+          [disabled]="bulkParsedProducts.length === 0"
+          (click)="confirmBulkUpload()">
+          Confirm & Upload ({{ bulkParsedProducts.length - invalidBulkRowsCount }} Valid Products)
+        </button>
+      </div>
     </div>
   </div>
 </div>

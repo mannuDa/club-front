@@ -15,7 +15,8 @@
             "main": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
-            "scripts": ["node_modules/summernote/dist/summernote-bs4.min.js"],
+            "scripts": ["node_modules/summernote/dist/summernote-bs4.min.js",
+                          "node_modules/xlsx/dist/xlsx.full.min.js"],
             "styles": [
                         "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.carousel.min.css",
                         "node_modules/ngx-owl-carousel-o/lib/styles/prebuilt-themes/owl.theme.default.min.css",
