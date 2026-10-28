@@ -20,15 +20,6 @@
 
   <div class="hero-image-wrapper" *ngFor="let slide of [slides[currentSlide]]">
     <img [src]="slide.image" alt="Model wearing clothes" class="hero-img">
-
-    <div class="circular-seal">
-      <svg viewBox="0 0 100 100" class="seal-svg">
-        <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-        <text font-size="8.5" letter-spacing="2" fill="#111E38">
-          <textPath href="#circlePath">{{ slide.sealText }}</textPath>
-        </text>
-      </svg>
-    </div>
   </div>
 
   <!-- Optional: Dots Indicator (Neeche dots dikhane ke liye agar chaho toh) -->

@@ -147,13 +147,19 @@
     overflow: hidden !important;
   }
 
+  .brand-tagline {
+    font-size: .55rem;
+    letter-spacing: 1px;
+    color: #c19a6b;
+}
+
   .footer-container {
     display: grid !important;
     grid-template-columns: 1.8fr 1fr 1fr !important;
     gap: 1rem !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    padding-bottom: 1.5rem !important;
+    padding-bottom: .5rem !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
   }
 

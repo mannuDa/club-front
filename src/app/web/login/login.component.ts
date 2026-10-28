@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Component, NgZone } from '@angular/core';
 import { HttpServiceService } from '../../services/http-service.service';
 import { Router } from '@angular/router';
-import { ToastService } from '../../services/toast.service';
+import { ToastrService } from 'ngx-toastr';
 import { WishlistAndCartService } from '../../services/wishlist-service';
 
 @Component({
@@ -39,28 +39,24 @@ export class LoginComponent {
     password: '',
     role: 'user' // NOTE: server must ignore this and force the role itself
   };
+  // OTP State Handlers
+  isOtpSent = false;
+  isSendingOtp = false;
+  isVerifyingOtp = false;
+  isOtpVerified = false;
+  enteredOtp = '';
+  otpError = '';
+  otpTimer = 0;
+  private timerInterval: any;
 
   constructor(
     private apiurl: HttpServiceService,
     private router: Router,
     private ngZone: NgZone,
-    private toast: ToastService,
+    private toast: ToastrService,
     private cartWishService: WishlistAndCartService
   ) {}
 
-  /**
-   * Show exactly ONE toast.
-   * The old code did `toast.error?.(msg) || toast.show?.(msg)`. error() returns undefined,
-   * so `||` always ran show() as well, which drew a second, default-styled (non-red) toast.
-   */
-  private notify(type: 'success' | 'error', message: string): void {
-    const t = this.toast as any;
-    if (typeof t[type] === 'function') {
-      t[type](message);
-    } else if (typeof t.show === 'function') {
-      t.show(message, type);
-    }
-  }
 
   toggleView(isLogin: boolean): void {
     this.isLoginView = isLogin;
@@ -81,9 +77,7 @@ export class LoginComponent {
   }
 
   onRegister(): void {
-    if (this.isPasswordMismatch) {
-      return;
-    }
+    if (this.isPasswordMismatch) { return; }
 
     this.errorMessage = null;
     this.successMessage = null;
@@ -97,7 +91,11 @@ export class LoginComponent {
       password: this.registerData.password,
       role: 'user'
     };
-
+    if (!this.isOtpVerified) {
+      this.otpError = 'Please verify OTP before proceeding.';
+      return;
+    }
+    this.isLoading = true;
     this.apiurl.post('auth/register', payload).subscribe({
       next: (response: any) => {
         this.ngZone.run(() => {
@@ -121,11 +119,11 @@ export class LoginComponent {
             const redirectTo = sessionStorage.getItem('redirectAfterLogin') || '/home';
             sessionStorage.removeItem('redirectAfterLogin');
 
-            this.notify('success', 'Account created and signed in successfully!');
+            this.toast.success('Account created and signed in successfully!', 'Success');
             this.router.navigateByUrl(redirectTo);
           } else {
             this.successMessage = 'Registration successful! Please sign in.';
-            this.notify('success', this.successMessage);
+            this.toast.success(this.successMessage, 'Success');
             this.isLoginView = true;
           }
         });
@@ -135,7 +133,7 @@ export class LoginComponent {
           this.isLoading = false;
           const msg = err?.error?.message || 'Registration failed.';
           this.errorMessage = msg;
-          this.notify('error', msg);
+          this.toast.error(msg, 'Error');
         });
       }
     });
@@ -161,7 +159,7 @@ export class LoginComponent {
         if (!token || !user) {
           const msg = 'Login failed! Invalid response from server.';
           this.errorMessage = msg;
-          this.notify('error', msg);
+          this.toast.error(msg, 'Error');
           return;
         }
 
@@ -183,7 +181,7 @@ export class LoginComponent {
         const redirectTo = sessionStorage.getItem('redirectAfterLogin') || defaultPath;
         sessionStorage.removeItem('redirectAfterLogin');
 
-        this.notify('success', 'Login successful!');
+        this.toast.success('Login successful!', 'Success');
 
         this.ngZone.run(() => {
           this.router.navigateByUrl(redirectTo).then(navigated => {
@@ -208,7 +206,74 @@ export class LoginComponent {
         }
 
         this.errorMessage = msg;
-        this.notify('error', msg);
+        this.toast.error(msg, 'Error');
+      }
+    });
+  }
+
+  googleAuth(isLogin: boolean): void {
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.isLoading = true;
+
+    const endpoint = isLogin ? 'auth/google-login' : 'auth/google-register';
+    this.apiurl.get(endpoint).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        const token = response?.tokens?.access?.token;
+        const user = response?.user;
+
+        if (!token || !user) {
+          const msg = 'Google authentication failed! Invalid response from server.';
+          this.errorMessage = msg;
+          this.toast.error(msg, 'Error');
+          return;
+        }
+
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('user-profile', JSON.stringify(user));
+        localStorage.setItem('user-id', user.id || user._id);
+
+        if (response?.tokens?.refresh?.token) {
+          localStorage.setItem('adminRefreshToken', response.tokens.refresh.token);
+        }
+
+        const userRole = this.apiurl.getUserRole() || user.role || 'user';
+        localStorage.setItem('Role', userRole);
+
+        // Immediately merge guest cart and load wishlist!
+        this.cartWishService.onUserLogin();
+
+        const defaultPath = userRole === 'admin' ? '/admin/dashboard' : '/home';
+        const redirectTo = sessionStorage.getItem('redirectAfterLogin') || defaultPath;
+        sessionStorage.removeItem('redirectAfterLogin');
+
+        this.toast.success('Google authentication successful!', 'Success');
+
+        this.ngZone.run(() => {
+          this.router.navigateByUrl(redirectTo).then(navigated => {
+            if (!navigated) {
+              console.error('Navigation failed for path:', redirectTo);
+            }
+          });
+        });
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+
+        let msg: string;
+        if (err.status === 401 || err.status === 400) {
+          msg = err.error?.message || 'Google authentication failed.';
+        } else if (err.status === 429) {
+          msg = 'Too many attempts. Please try again in a few minutes.';
+        } else if (err.status === 0) {
+          msg = 'Network error. Please check your internet connection.';
+        } else {
+          msg = 'Something went wrong. Please try again later.';
+        }
+
+        this.errorMessage = msg;
+        this.toast.error(msg, 'Error');
       }
     });
   }
