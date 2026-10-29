@@ -81,6 +81,7 @@ export class LowerCloths implements OnInit {
   /* Bulk Excel Upload State */
   bulkParsedProducts: any[] = [];
   invalidBulkRowsCount: number = 0;
+  selectedZipFile: File | null = null;
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('bulkExcelInput') bulkExcelInput!: ElementRef<HTMLInputElement>;
@@ -705,32 +706,79 @@ async onBulkExcelUpload(event: Event): Promise<void> {
     this.resetBulkFileInput();
   }
 
-  confirmBulkUpload(): void {
-    if (this.bulkParsedProducts.length === 0) return;
+  onZipSelected(event: Event): void {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
 
-    const validProducts = this.bulkParsedProducts.filter(p => p.isValid);
+  if (!files || files.length === 0) return;
 
-    if (validProducts.length === 0) {
-      this.toast.error('Koi valid product nahi mila upload karne ke liye.');
-      return;
-    }
+  const file = files[0];
 
-    this.spinner.show();
-    this.apiurl.post('products/bulk', { products: validProducts }).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
-        this.closeBulkPreviewModal();
-        this.toast.success(`${validProducts.length} products successfully add ho gaye!`);
-        this.getCloths();
-        this.bulkParsedProducts = [];
-      },
-      error: (err: any) => {
-        this.spinner.hide();
-        this.toast.error('Bulk upload me error aaya! Backend check karein.');
-        console.error('Bulk upload error:', err);
-      }
-    });
+  // Validation: Check if it's actually a ZIP file
+  if (!file.name.toLowerCase().endsWith('.zip')) {
+    this.toast.error('Kripya sirf .zip format ki archive file select karein.');
+    target.value = '';
+    return;
   }
+
+  // Size limit check (e.g., 100 MB max)
+  const MAX_ZIP_MB = 100;
+  if (file.size > MAX_ZIP_MB * 1024 * 1024) {
+    this.toast.error(`ZIP file ka size ${MAX_ZIP_MB}MB se zyada nahi hona chahiye.`);
+    target.value = '';
+    return;
+  }
+
+  this.selectedZipFile = file;
+  this.toast.success(`you have selected: ${file.name}`);
+}
+
+confirmBulkUpload(): void {
+  if (this.bulkParsedProducts.length === 0) return;
+
+  const validProducts = this.bulkParsedProducts.filter(p => p.isValid);
+
+  if (validProducts.length === 0) {
+    this.toast.error('Koi valid product nahi mila upload karne ke liye.');
+    return;
+  }
+
+  this.spinner.show();
+
+  // 1. JSON ki jagah FormData banayein
+  const formData = new FormData();
+
+  // 2. Excel ke parsed products ko JSON string me serialize karein
+  formData.append('products', JSON.stringify(validProducts));
+
+  // 3. Agar user ne ZIP file select ki hai, toh use append karein
+  if (this.selectedZipFile) {
+    formData.append('zipFile', this.selectedZipFile, this.selectedZipFile.name);
+  }
+
+  // 4. API call (FormData send karte waqt Angular Content-Type multipart/form-data khud handle karta hai)
+  this.apiurl.post('products/bulk', formData).subscribe({
+    next: (res: any) => {
+      this.spinner.hide();
+      this.closeBulkPreviewModal();
+      
+      const count = res.insertedCount || validProducts.length;
+      this.toast.success(`${count} products successfully add ho gaye!`);
+      
+      // State reset karein
+      this.bulkParsedProducts = [];
+      this.selectedZipFile = null;
+      
+      // Table data refresh
+      this.getCloths();
+    },
+    error: (err: any) => {
+      this.spinner.hide();
+      this.toast.error(err.error?.message || 'Bulk upload me error aaya! Backend check karein.');
+      console.error('Bulk upload error:', err);
+    }
+  });
+}
 
   removeBulkRow(index: number): void {
     this.bulkParsedProducts.splice(index, 1);
@@ -817,25 +865,7 @@ async onBulkExcelUpload(event: Event): Promise<void> {
         'Sleeve Type': 'Full Sleeve',
         'Description': 'Premium 100% cotton casual shirt'
       },
-      {
-        'Name': 'Slim Fit Denim Jeans',
-        'Category': 'lower',
-        'Fashion Type': 'Denim',
-        'Garment Style': 'Jeans',
-        'Subtype': 'Casual Jeans',
-        'Collection': 'Winter 2026',
-        'Model': 'MOD-JN-99',
-        'Listing Price': 2999,
-        'Selling Price': 1999,
-        'Sizes': '30,32,34',
-        'Color': '#0000FF',
-        'Gender': 'men',
-        'Fit Type': 'Slim Fit',
-        'Cloth Type': 'Denim',
-        'Neck Type': '',
-        'Sleeve Type': '',
-        'Description': 'Stretchable dark blue denim'
-      }
+
     ];
 
     const worksheet = XLSX.utils.json_to_sheet(sampleData);

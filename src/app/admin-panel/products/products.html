@@ -688,6 +688,30 @@
         <button type="button" class="btn-close" (click)="closeBulkPreviewModal()" aria-label="Close"></button>
       </div>
 
+<!-- Hidden input for ZIP file -->
+<input 
+  type="file" 
+  #zipFileInput 
+  class="d-none" 
+  accept=".zip, application/zip, application/x-zip-compressed" 
+  (change)="onZipSelected($event)" 
+  (click)="$event.stopPropagation(); zipFileInput.value = ''"
+/>
+
+<!-- Bulk Images Button -->
+<button 
+  class="btn btn-success shadow-sm d-flex align-items-center gap-1 px-3 py-1.5" 
+  type="button" 
+  (click)="zipFileInput.click()">
+  <i class="mdi mdi-folder-zip-outline fs-18"></i>
+  <span class="fw-semibold">Bulk Images</span>
+</button>
+
+<!-- Selected file name badge (Optional) -->
+<span *ngIf="selectedZipFile" class="badge bg-light text-success border px-2 py-1">
+  <i class="mdi mdi-check-circle me-1"></i>{{ selectedZipFile.name }}
+</span>
+
       <div class="modal-body">
         <!-- Validation Warning Alert -->
         <div *ngIf="invalidBulkRowsCount > 0" class="alert alert-warning py-2 mb-3">
