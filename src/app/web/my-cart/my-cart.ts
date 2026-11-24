@@ -28,6 +28,12 @@ export class MyCart implements OnInit, OnDestroy {
   orderSuccess: { id: string; amount: number; paymentId: string } | null = null;
   checkoutForm: FormGroup;
 
+  // Size selection: one choice PER cart line (not one global value)
+  selectedSizes: { [lineKey: string]: string } = {};
+  sizeError = false; // true after a failed "Proceed to Checkout" so lines without a size show a hint
+  private sizesByProduct = new Map<string, string[]>(); // sizes fetched from products/:id
+  private sizesRequested = new Set<string>();
+  OrderData : any = [];
   constructor(
     public cartWishService: WishlistAndCartService,
     private api: HttpServiceService,
@@ -61,6 +67,7 @@ export class MyCart implements OnInit, OnDestroy {
       this.cartWishService.cartItems$.subscribe((items) => {
         this.cartItems = items;
         console.log('checking items:', this.cartItems)
+        this.loadMissingSizes(items);
         this.cd.detectChanges();
       })
     );
@@ -104,6 +111,56 @@ export class MyCart implements OnInit, OnDestroy {
   }
 
   // ---------------------------------------------------------------------------
+  // Sizes (chosen here in the cart, before paying)
+  // ---------------------------------------------------------------------------
+
+  /** Stable key for one cart line. */
+  private lineKey(item: NormalizedCartItem): string {
+    return `${item.cartItemId || item.productId}|${item.size ?? ''}`;
+  }
+
+  /** All sizes this product comes in (from the cart's product data, else fetched once from products/:id). */
+  sizeOptions(item: NormalizedCartItem): string[] {
+    const fromItem = item.product?.sizes ?? item.product_id?.sizes;
+    if (Array.isArray(fromItem) && fromItem.length > 0) return fromItem;
+    return this.sizesByProduct.get(item.productId) ?? [];
+  }
+
+  /** The size currently picked for this line: what the user clicked, else what the cart already has. */
+  chosenSize(item: NormalizedCartItem): string {
+    return this.selectedSizes[this.lineKey(item)] ?? item.size ?? '';
+  }
+
+  /** True when the product has sizes but none is picked yet. */
+  needsSize(item: NormalizedCartItem): boolean {
+    return this.sizeOptions(item).length > 0 && !this.chosenSize(item);
+  }
+
+  selectSize(item: NormalizedCartItem, size: string): void {
+    if (this.isPaying) return;
+    this.selectedSizes[this.lineKey(item)] = size;
+  }
+
+  /** Some cart responses don't include the product's size list, so fetch it once per product. */
+  private loadMissingSizes(items: NormalizedCartItem[]): void {
+    items.forEach((item) => {
+      if (this.sizeOptions(item).length > 0 || this.sizesRequested.has(item.productId)) return;
+      this.sizesRequested.add(item.productId);
+
+      this.api.get(`products/${item.productId}`).subscribe({
+        next: (res: any) => {
+          const product = res?.data || res;
+          if (Array.isArray(product?.sizes) && product.sizes.length > 0) {
+            this.sizesByProduct.set(item.productId, product.sizes);
+            this.cd.detectChanges();
+          }
+        },
+        error: () => { /* no size list -> treat as a product without sizes */ },
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------------------
   // Checkout -> address -> Razorpay -> verify  (the payment part lives in RazorpayService)
   // ---------------------------------------------------------------------------
   checkout(): void {
@@ -113,11 +170,18 @@ export class MyCart implements OnInit, OnDestroy {
       this.router.navigate(['/login']);
       return;
     }
-    alert('checkout clicked');
-    if (this.cartItems.length === 0) { 
-      this.toastr.warning('Your bag is empty.');
+    if (this.cartItems.length === 0) { this.toastr.warning('Your bag is empty.');
       return;
     }
+
+    // Every item that comes in sizes must have one selected before we go to payment.
+    const missing = this.cartItems.find((item) => this.needsSize(item));
+    if (missing) {
+      this.sizeError = true;
+      this.toastr.error(`Select a size for "${missing.name}" first.`);
+      return;
+    }
+    this.sizeError = false;
 
     this.checkoutForm.patchValue(this.razorpay.getProfilePrefill());
     this.errorMsg = '';
@@ -130,53 +194,97 @@ export class MyCart implements OnInit, OnDestroy {
     this.errorMsg = '';
   }
 
-  closeSuccess(): void {
-    this.orderSuccess = null;
-  }
+  closeSuccess(): void { this.orderSuccess = null;  }
 
   payNow(): void {
-    if (this.checkoutForm.invalid) {
-      this.checkoutForm.markAllAsTouched();
+    if (this.checkoutForm.invalid) { this.checkoutForm.markAllAsTouched();
       return;
     }
+    this.createOrder();    return;
 
+    // Safety net: the cart may have changed while the modal was open.
+    // if (this.cartItems.some((item) => this.needsSize(item))) {
+    //   this.errorMsg = 'Select a size for every item in your bag.';
+    //   return;
+    // }
+
+    // this.errorMsg = '';
+    // this.isPaying = true;
+    // this.razorpay.startCheckout(
+    //   {
+    //     items: this.cartItems.map((item) => ({
+    //       productId: item.productId,
+    //       size: this.chosenSize(item),
+    //       quantity: Number(item.quantity) || 1,
+    //     })),
+    //     shippingAddress: this.checkoutForm.value,
+    //     description:
+    //       this.cartItems.length === 1
+    //         ? this.cartItems[0].name
+    //         : `${this.cartItems.length} items from your bag`,
+    //   },
+    //   {
+    //     onSuccess: (order) => {
+    //       this.isPaying = false;
+    //       this.showCheckout = false;
+    //       this.orderSuccess = order;
+    //       this.checkoutForm.reset();
+    //       this.selectedSizes = {};
+    //       this.cartWishService.loadCart(); // refresh the bag (server should clear the paid items)
+    //       this.cd.detectChanges();
+    //     },
+    //     onError: (message) => this.failPayment(message),
+    //     onPaymentFailed: (message) => {
+    //       this.errorMsg = message;
+    //       this.cd.detectChanges();
+    //     },
+    //     onDismiss: () => {
+    //       this.isPaying = false;
+    //       this.cd.detectChanges();
+    //     },
+    //   }
+    // );
+  }
+
+ private createOrder(): void {
     this.errorMsg = '';
     this.isPaying = true;
 
-    this.razorpay.startCheckout(
-      {
-        // Adjust productId / size to match your NormalizedCartItem fields.
-        items: this.cartItems.map((item) => ({
-          productId: item.productId,
-          size: item.size ?? '',
-          quantity: Number(item.quantity) || 1,
-        })),
-        shippingAddress: this.checkoutForm.value,
-        description:
-          this.cartItems.length === 1
-            ? this.cartItems[0].name
-            : `${this.cartItems.length} items from your bag`,
+    const mockPaymentId = 'pay_test_' + Date.now();
+
+    const payload = {
+      items: this.cartItems.map((item) => ({
+        productId: item.productId,
+        size: this.chosenSize(item),
+        quantity: Number(item.quantity) || 1,
+      })),
+      shippingAddress: this.checkoutForm.value,
+      // Manual Razorpay details for local testing
+      razorpay_order_id: 'order_test_' + Date.now(),
+      razorpay_payment_id: mockPaymentId,
+      razorpay_signature: 'dummy_signature_for_local_test',
+    };
+
+    this.api.post('orders/create-order', payload).subscribe({
+      next: (r: any) => {
+        this.isPaying = false;
+        this.showCheckout = false;
+        this.orderSuccess = {
+          id: r?.data?.orderID || r?.data?._id,
+          amount: r?.data?.amount ?? this.subtotal,
+          paymentId: mockPaymentId,
+        };
+        this.checkoutForm.reset();
+        this.selectedSizes = {};
+        this.cartWishService.loadCart();
+        this.toastr.success('Test order created!');
+        this.cd.detectChanges();
       },
-      {
-        onSuccess: (order) => {
-          this.isPaying = false;
-          this.showCheckout = false;
-          this.orderSuccess = order;
-          this.checkoutForm.reset();
-          this.cartWishService.loadCart(); // refresh the bag (server should clear the paid items)
-          this.cd.detectChanges();
-        },
-        onError: (message) => this.failPayment(message),
-        onPaymentFailed: (message) => {
-          this.errorMsg = message;
-          this.cd.detectChanges();
-        },
-        onDismiss: () => {
-          this.isPaying = false;
-          this.cd.detectChanges();
-        },
-      }
-    );
+      error: (err) => {
+        console.error('Create order failed:', err);
+        this.failPayment(err?.error?.message || 'Order create nahi hua.');
+      },
+    });
   }
 
   private failPayment(message: string): void {
@@ -185,8 +293,8 @@ export class MyCart implements OnInit, OnDestroy {
     this.cd.detectChanges();
   }
 
-goToProductDetails(id: string | number | undefined): void {
-  if (!id) return;
-  this.router.navigate(['/product', id]);
-}
+  goToProductDetails(id: string | number | undefined): void {
+    if (!id) return;
+    this.router.navigate(['/product', id]);
+  }
 }
