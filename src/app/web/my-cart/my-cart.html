@@ -16,12 +16,28 @@
             ? (imageURL + (item.imagesPath[0].startsWith('/') ? item.imagesPath[0] : '/' + item.imagesPath[0]))
             : 'assets/web/images/placeholder.png'"
           [alt]="item.name"
-          (click)="goToProductDetails(item?._id)"
+          (click)="goToProductDetails(item.productId)"
         >
         <div class="item-details">
           <h4>{{ item.name }}</h4>
-          <p class="item-size" *ngIf="item.size">Size: <strong>{{ item.size }}</strong></p>
           <p class="item-price">₹{{ item.selling_price }}</p>
+
+          <!-- Size: pick one per item before checkout -->
+          <div class="attribute-box" *ngIf="sizeOptions(item).length > 0">
+            <span class="attr-label">Select Size</span>
+            <div class="chip-group">
+              <button *ngFor="let size of sizeOptions(item)" type="button" class="size-chip"
+                      [class.active-chip]="chosenSize(item) === size"
+                      [disabled]="isPaying"
+                      (click)="selectSize(item, size)">
+                {{ size }}
+              </button>
+            </div>
+            <small class="size-err" *ngIf="sizeError && needsSize(item)">Please select a size</small>
+          </div>
+          <!-- Fallback when the product has no size list but the cart line has a saved size -->
+          <p class="item-size" *ngIf="item.size && sizeOptions(item).length === 0">Size: <strong>{{ item.size }}</strong></p>
+
           <div class="item-qty-controls">
             <button type="button" class="qty-control-btn" (click)="updateQty(item, -1)" aria-label="Decrease quantity">-</button>
             <span class="qty-val">{{ item.quantity || 1 }}</span>
@@ -49,5 +65,96 @@
       </div>
       <button class="checkout-btn" (click)="checkout()">Proceed to Checkout</button>
     </div>
+  </div>
+</div>
+
+<!-- ===================== Checkout: delivery address + Pay ===================== -->
+<div class="co-overlay" *ngIf="showCheckout" (click)="closeCheckout()">
+  <div class="co-modal" role="dialog" aria-modal="true" aria-labelledby="co-title" (click)="$event.stopPropagation()">
+    <button type="button" class="co-close" (click)="closeCheckout()" [disabled]="isPaying" aria-label="Close">&times;</button>
+    <h3 id="co-title">Delivery address</h3>
+
+    <form [formGroup]="checkoutForm" (ngSubmit)="payNow()" novalidate>
+      <div class="co-grid">
+
+        <div class="co-field full">
+          <label for="co-fullName">Full name</label>
+          <input id="co-fullName" type="text" formControlName="fullName" autocomplete="name"
+                 [class.co-invalid]="f['fullName'].touched && f['fullName'].invalid">
+          <small class="co-err" *ngIf="f['fullName'].touched && f['fullName'].invalid">Enter your full name.</small>
+        </div>
+
+        <div class="co-field">
+          <label for="co-email">Email</label>
+          <input id="co-email" type="email" formControlName="email" autocomplete="email"
+                 [class.co-invalid]="f['email'].touched && f['email'].invalid">
+          <small class="co-err" *ngIf="f['email'].touched && f['email'].invalid">Enter a valid email.</small>
+        </div>
+
+        <div class="co-field">
+          <label for="co-phone">Mobile number</label>
+          <input id="co-phone" type="tel" inputmode="numeric" maxlength="10" formControlName="phone" autocomplete="tel"
+                 [class.co-invalid]="f['phone'].touched && f['phone'].invalid">
+          <small class="co-err" *ngIf="f['phone'].touched && f['phone'].invalid">Enter a 10-digit mobile number.</small>
+        </div>
+
+        <div class="co-field full">
+          <label for="co-line1">Address line 1</label>
+          <input id="co-line1" type="text" formControlName="line1" autocomplete="address-line1"
+                 [class.co-invalid]="f['line1'].touched && f['line1'].invalid">
+          <small class="co-err" *ngIf="f['line1'].touched && f['line1'].invalid">Address is required.</small>
+        </div>
+
+        <div class="co-field full">
+          <label for="co-line2">Address line 2 <span class="co-optional">(optional)</span></label>
+          <input id="co-line2" type="text" formControlName="line2" autocomplete="address-line2">
+        </div>
+
+        <div class="co-field">
+          <label for="co-city">City</label>
+          <input id="co-city" type="text" formControlName="city" autocomplete="address-level2"
+                 [class.co-invalid]="f['city'].touched && f['city'].invalid">
+          <small class="co-err" *ngIf="f['city'].touched && f['city'].invalid">City is required.</small>
+        </div>
+
+        <div class="co-field">
+          <label for="co-state">State</label>
+          <input id="co-state" type="text" formControlName="state" autocomplete="address-level1"
+                 [class.co-invalid]="f['state'].touched && f['state'].invalid">
+          <small class="co-err" *ngIf="f['state'].touched && f['state'].invalid">State is required.</small>
+        </div>
+
+        <div class="co-field">
+          <label for="co-pincode">Pincode</label>
+          <input id="co-pincode" type="text" inputmode="numeric" maxlength="6" formControlName="pincode" autocomplete="postal-code"
+                 [class.co-invalid]="f['pincode'].touched && f['pincode'].invalid">
+          <small class="co-err" *ngIf="f['pincode'].touched && f['pincode'].invalid">Enter a 6-digit pincode.</small>
+        </div>
+
+      </div>
+
+      <p class="co-banner" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+      <div class="co-total">
+        <span>Total ({{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'items' }})</span>
+        <strong>₹{{ subtotal }}</strong>
+      </div>
+
+      <button type="submit" class="co-pay" [disabled]="isPaying">
+        {{ isPaying ? 'Processing...' : 'Pay ₹' + subtotal }}
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== Order placed ===================== -->
+<div class="co-overlay" *ngIf="orderSuccess" (click)="closeSuccess()">
+  <div class="co-modal co-success" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <div class="co-tick">&#10003;</div>
+    <h3>Order placed</h3>
+    <p>Thank you! Your payment was successful.</p>
+    <p class="co-ref">Order ID: <strong>{{ orderSuccess.id }}</strong></p>
+    <p class="co-ref">Payment ID: <strong>{{ orderSuccess.paymentId }}</strong></p>
+    <button type="button" class="co-pay" routerLink="/products" (click)="closeSuccess()">Continue shopping</button>
   </div>
 </div>

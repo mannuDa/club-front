@@ -265,3 +265,230 @@
   color: #4b5563;
   margin: 0 0 4px 0;
 }
+
+/* ===== Checkout modal — append this to my-cart.css ===== */
+
+.co-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(17, 30, 56, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.co-modal {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.co-modal h3 {
+  margin: 0 0 16px;
+  color: #111e38;
+}
+
+.co-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  color: #555;
+}
+
+.co-close:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.co-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.co-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.co-field.full {
+  grid-column: 1 / -1;
+}
+
+.co-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.co-optional {
+  font-weight: 400;
+  color: #888;
+}
+
+.co-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px; /* 16px stops iOS from zooming on focus */
+}
+
+.co-field input:focus {
+  outline: none;
+  border-color: #111e38;
+  box-shadow: 0 0 0 2px rgba(17, 30, 56, 0.15);
+}
+
+.co-field input.co-invalid {
+  border-color: #c62828;
+}
+
+.co-err {
+  color: #c62828;
+  font-size: 12px;
+}
+
+.co-banner {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #b71c1c;
+  font-size: 14px;
+}
+
+.co-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 18px 0 12px;
+  padding-top: 14px;
+  border-top: 1px solid #eee;
+  color: #111e38;
+}
+
+.co-pay {
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-radius: 8px;
+  background: #111e38;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.co-pay:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.co-success {
+  text-align: center;
+}
+
+.co-tick {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 30px;
+  line-height: 56px;
+}
+
+.co-ref {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #444;
+  word-break: break-all;
+}
+
+.co-success .co-pay {
+  margin-top: 18px;
+}
+
+/* ===== Size chips in the cart — append this to my-cart.css ===== */
+
+.attribute-box {
+  margin: 8px 0;
+}
+
+.attr-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.size-chip {
+  min-width: 40px;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #111e38;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.size-chip:hover:not(:disabled) {
+  border-color: #111e38;
+}
+
+.size-chip.active-chip {
+  background: #111e38;
+  border-color: #111e38;
+  color: #fff;
+}
+
+.size-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.size-err {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #c62828;
+}
+
+@media (max-width: 480px) {
+  .co-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .co-modal {
+    padding: 20px 16px;
+  }
+}

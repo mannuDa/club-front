@@ -606,8 +606,10 @@ export class WishlistAndCartService {
    * Remove item from cart (works seamlessly for guest and logged-in user)
    */
   removeItem(item: any): void {
+    console.log('remove item from cart:', item);
+    
     const productId = this.cartItemProductId(item);
-    const targetId = item?.cartItemId || item?._id || productId;
+    const targetId = item?.productId || item?._id || productId;
 
     if (!this.isLoggedIn) {
       let items = this.loadGuestCart();
@@ -628,17 +630,17 @@ export class WishlistAndCartService {
       },
       error: () => {
         // Fallback: try deleting by productId
-        if (targetId !== productId) {
-          this.apiurl.delete('users/cart', productId).subscribe({
-            next: () => {
-              this.loadCart();
-              this.toast.success('Item removed from cart');
-            },
-            error: (err: any) => this.toast.error(this.errorMsg(err, 'Could not remove item')),
-          });
-        } else {
-          this.toast.error('Could not remove item');
-        }
+        // if (targetId !== productId) {
+        //   this.apiurl.delete('users/cart', productId).subscribe({
+        //     next: () => {
+        //       this.loadCart();
+        //       this.toast.success('Item removed from cart');
+        //     },
+        //     error: (err: any) => this.toast.error(this.errorMsg(err, 'Could not remove item')),
+        //   });
+        // } else {
+        //   this.toast.error('Could not remove item');
+        // }
       },
     });
   }

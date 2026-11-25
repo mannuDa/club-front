@@ -1,1 +1,71 @@
-<p>my-orders works!</p>
+<div class="orders-container">
+  <h2>My Orders</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="state-box">
+    <p>Loading your orders...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && errorMsg" class="state-box error">
+    <p>{{ errorMsg }}</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !errorMsg && orders.length === 0" class="state-box">
+    <p>Abhi tak koi order place nahi kiya hai.</p>
+    <a routerLink="/" class="shop-btn">Start Shopping</a>
+  </div>
+
+  <!-- Orders List -->
+  <div *ngIf="!isLoading && orders.length > 0" class="orders-list">
+    <div class="order-card" *ngFor="let order of orders">
+      
+      <!-- Header -->
+      <div class="order-header">
+        <div>
+          <span class="label">Order ID:</span>
+          <strong>#{{ order.orderID  }}</strong>
+        </div>
+        <div>
+          <span class="label">Placed on:</span>
+          <span>{{ order.createdAt | date:'mediumDate' }}</span>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+          {{ order.status | titlecase }}
+        </span>
+      </div>
+
+      <!-- Body -->
+      <div class="order-body">
+        <div class="product-info">
+          <img  [src]="order.prodID?.imagesPath?.[0] ? (imageURL + order.prodID.imagesPath[0]) : 'assets/placeholder.png'"
+                [alt]="order.prodID?.name || 'Product'"
+                class="product-img"
+                />
+          <div class="details">
+            <h4>{{ order.prodID?.name || 'Product Name' }}</h4>
+            <p class="meta">
+              <span *ngIf="order.size">Size: <strong>{{ order.size }}</strong> | </span>
+              Qty: <strong>{{ order.quntity }}</strong>
+              <span *ngIf="order.prodID?.color"> | Color: {{ order.prodID.color }}</span>
+            </p>
+            <p class="price">₹{{ order.amount }} <small>({{ order.payment | uppercase }} - {{ order.paymentStatus }})</small></p>
+            <button type="button" class="btn-quick-add" (click)="gotoproduct(order.prodID._id)">
+                  <span>Check Details</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="shipping-info" *ngIf="order.shippingAddress">
+          <h5>Delivery Address</h5>
+          <p>{{ order.shippingAddress.fullName }}</p>
+          <p>{{ order.shippingAddress.line1 }}, {{ order.shippingAddress.line2 }}</p>
+          <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} - {{ order.shippingAddress.pincode }}</p>
+          <p>Phone: {{ order.shippingAddress.phone }}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
