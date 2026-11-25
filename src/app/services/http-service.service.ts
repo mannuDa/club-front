@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 export class HttpServiceService {
 
   readonly imageBaseURL = 'http://localhost:8000';
+  // readonly imageBaseURL = 'https://clubavis.in/';
   readonly apiURL = this.imageBaseURL + '/api/';
 
   constructor(private http: HttpClient, private ngZone: NgZone, private router: Router) { }

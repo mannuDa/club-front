@@ -412,7 +412,7 @@ export class LowerCloths implements OnInit {
     if (product !== undefined) {
       this.isEditMode = true;
       this.currentProductId = product._id || product.id;
-
+      console.log('Editing product :', product);
       const category = product.category || '';
       this.clothsSizes = category === "lower" ? this.lowerSizes : category === "upper" ? this.upperSizes : [];
 
@@ -445,7 +445,8 @@ export class LowerCloths implements OnInit {
       if (product.imagesPath && product.imagesPath.length > 0) {
         this.imagePreviews = [...product.imagesPath];
       }
-    } else {
+    } 
+    else {
       this.isEditMode = false;
       this.currentProductId = '';
       this.createForm.reset({
@@ -488,7 +489,7 @@ export class LowerCloths implements OnInit {
     }
     this.spinner.show();
     const formData = new FormData();
-
+    console.log('Form data before submission:', this.createForm.value);
     Object.keys(this.createForm.controls).forEach(key => {
       if (key !== 'sizes') {
         const value = this.createForm.get(key)?.value;
@@ -841,34 +842,63 @@ confirmBulkUpload(): void {
   //   XLSX.writeFile(workbook, 'Product_Bulk_Upload_Sample.xlsx');
   // }
 
-  async downloadSampleExcel(): Promise<void> {
+async downloadSampleExcel(): Promise<void> {
   try {
     const XLSX = await import('xlsx');
 
-        const sampleData = [
+    const sampleData = [
       {
-        'Name': 'Classic White Shirt',
+        'Product name': "Men's Black Nehru Jacket | Mandarin Collar Sleeveless Waistcoat",
+        'Model / SKU': 'CAMWC0008',
+        'Collection': 'Summer Collection 2026',
+        'Fashion type': 'Party',
         'Category': 'upper',
-        'Fashion Type': 'Casual',
-        'Garment Style': 'Shirts',
-        'Subtype': 'Casual Shirts',
-        'Collection': 'Summer 2026',
-        'Model': 'MOD-SH-01',
-        'Listing Price': 1999,
-        'Selling Price': 1499,
-        'Sizes': 'M,L,XL',
-        'Color': '#FFFFFF',
-        'Gender': 'men',
-        'Fit Type': 'Slim',
-        'Cloth Type': 'Cotton',
-        'Neck Type': 'Collar',
-        'Sleeve Type': 'Full Sleeve',
-        'Description': 'Premium 100% cotton casual shirt'
-      },
-
+        'Garment style': 'WAISTCOAT',
+        'Subtype': 'JACKET',
+        'Colour': '#000000',
+        'gender': 'male',
+        'Sizes': 'M,L,XL,XXL',
+        'Listing price': 5799,
+        'Selling price': 2899,
+        'Discount': 50,
+        'Fit type': 'Regular Fit',
+        'Cloth type': 'TWEED',
+        'Neck type': 'Mandarin Collar',
+        'Sleeve type': 'Half Sleeve',
+        'Description': 'Classic in design. Refined in style. Made for memorable occasions.',
+        'Care instructions': "Check the garment's care label before washing or cleaning.",
+        'Shipping instructions': 'Free delivery on prepaid orders above 499 INR.',
+        'Return policy': '7 days easy return if tags remain intact.'
+      }
     ];
 
     const worksheet = XLSX.utils.json_to_sheet(sampleData);
+
+    // Columns width set karein taaki template download hone par text truncate na ho
+    worksheet['!cols'] = [
+      { wch: 45 }, // Product name
+      { wch: 16 }, // Model / SKU
+      { wch: 25 }, // Collection
+      { wch: 16 }, // Fashion type
+      { wch: 14 }, // Category
+      { wch: 16 }, // Garment style
+      { wch: 14 }, // Subtype
+      { wch: 12 }, // Colour
+      { wch: 10 }, // gender
+      { wch: 16 }, // Sizes
+      { wch: 14 }, // Listing price
+      { wch: 14 }, // Selling price
+      { wch: 10 }, // Discount
+      { wch: 14 }, // Fit type
+      { wch: 14 }, // Cloth type
+      { wch: 18 }, // Neck type
+      { wch: 16 }, // Sleeve type
+      { wch: 50 }, // Description
+      { wch: 45 }, // Care instructions
+      { wch: 40 }, // Shipping instructions
+      { wch: 35 }  // Return policy
+    ];
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Products_Sample');
     XLSX.writeFile(workbook, 'Product_Bulk_Upload_Sample.xlsx');

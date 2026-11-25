@@ -4,7 +4,7 @@ import { OwlCarousel } from '../../services/owl-courosol';
 import { CarouselModule, CarouselComponent } from 'ngx-owl-carousel-o';
 import { HttpServiceService } from '../../services/http-service.service';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterLink, Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { WishlistAndCartService } from '../../services/wishlist-service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -14,6 +14,7 @@ export interface BestsellerProduct {
   name: string;
   category: 'streetwear' | 'basics' | 'outerwear' | string;
   imagesPath: string;
+  model: string;
   fashionType?: string;
   selling_price: string | number;
 }
@@ -21,7 +22,8 @@ export interface BestsellerProduct {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, CarouselModule],
+  imports: [CommonModule, FormsModule, 
+    CarouselModule, RouterModule],
   templateUrl: './home.html',
   styleUrls: ['./home.css']
 })
@@ -41,10 +43,10 @@ export class HomeComponent implements OnInit {
   private readonly defaultRating = 4.2;
 
   constructor(
-    private apiurl: HttpServiceService, 
-    private cd: ChangeDetectorRef, 
     public cartANDwish: WishlistAndCartService,
     public owl: OwlCarousel, 
+    private apiurl: HttpServiceService, 
+    private cd: ChangeDetectorRef, 
     private router: Router,
     private toastr: ToastrService,
     private ngZone: NgZone
@@ -99,14 +101,25 @@ export class HomeComponent implements OnInit {
     this.getBestsellers();
     
   }
+
 startAutoSlide(): void {
-    // NgZone.runOutsideAngular ke bahar run karke, ngZone.run ke andar index update karenge
-    this.slideInterval = setInterval(() => {
-      this.ngZone.run(() => {
+  if (this.slideInterval) {    clearInterval(this.slideInterval);   }
+
+  this.slideInterval = setInterval(() => {
+    this.ngZone.run(() => {
+      if (this.slides && this.slides.length > 0) {
         this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-      });
-    }, 4000); // 4 seconds
-  }
+        this.cd.markForCheck(); // <-- View ko re-render karne ke liye
+      }
+    });
+  }, 5000);
+}
+
+// User jab manually dot click kare, tab timer reset ho taaki jerk na aaye
+setSlide(index: number): void {
+  this.currentSlide = index;
+  this.startAutoSlide(); // Timer reset
+}
 
   getProducts() {
     this.apiurl.get('products').subscribe({
@@ -114,6 +127,7 @@ startAutoSlide(): void {
         this.allProducts = (res || [])
           .sort((a: any, b: any) => (b.id > a.id ? 1 : -1))
           .slice(0, 6);
+          console.log('Products loaded successfully:', this.imageURL, res);
         this.cd.detectChanges();
       },
       error: (err) => console.error('Failed to load products', err)
@@ -189,7 +203,6 @@ get filteredBestsellers(): BestsellerProduct[] {
   }
 
   checkCartlist(productID: string): boolean {
-    
     return this.cartANDwish.checkCart(productID);
   }
 

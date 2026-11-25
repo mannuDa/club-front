@@ -1,35 +1,39 @@
 <!-- ***** Main Banner Area Start ***** -->
 <main class="home-page">
 
-<section class="hero-section" *ngIf="slides.length > 0">
-  <div class="hero-content" *ngFor="let slide of [slides[currentSlide]]; ">
-    <span class="sub-title">{{ slide.subTitle }}</span>
-    <h1 class="hero-title" [innerHTML]="slide.title"></h1>
+<section class="hero-section" *ngIf="slides && slides.length > 0">
+  <!-- Current Slide Content -->
+  <div class="hero-content">
+    <span class="sub-title">{{ slides[currentSlide].subTitle }}</span>
+    <h1 class="hero-title" [innerHTML]="slides[currentSlide].title"></h1>
 
     <div class="divider">
       <img src="assets/circle-logo-trans.png" alt="Club Avis Logo" class="bird-icon">
     </div>
 
-    <p class="hero-description" [innerHTML]="slide.description"></p>
+    <p class="hero-description" [innerHTML]="slides[currentSlide].description"></p>
 
-    <button class="shop-btn">
-      SHOP NOW
-      <span class="arrow">&rarr;</span>
+    <button type="button" class="shop-btn" [routerLink]="['/products']">
+      SHOP NOW <span class="arrow">&rarr;</span>
     </button>
   </div>
 
-  <div class="hero-image-wrapper" *ngFor="let slide of [slides[currentSlide]]">
-    <img [src]="slide.image" alt="Model wearing clothes" class="hero-img">
+  <!-- Current Slide Image -->
+  <div class="hero-image-wrapper">
+    <img [src]="slides[currentSlide].image" alt="Model wearing clothes" class="hero-img">
   </div>
 
-  <!-- Optional: Dots Indicator (Neeche dots dikhane ke liye agar chaho toh) -->
+  <!-- Slide Dots -->
   <div class="slide-dots">
-    <span *ngFor="let s of slides; let i = index" 
-          [class.active]="i === currentSlide" 
-          (click)="currentSlide = i">
+    <span 
+      *ngFor="let s of slides; let i = index" 
+      [class.active]="i === currentSlide" 
+      (click)="setSlide(i)">
     </span>
   </div>
 </section>
+
+
   <!-- FEATURES BAR -->
   <section class="features-bar">
     <div class="feature-item">
@@ -96,29 +100,31 @@
     </div>
 
     <!-- Product cards -->
-    <div class="bs-grid">
-      <article class="bs-card" *ngFor="let item of filteredBestsellers">
+<div class="bs-grid">
+  @for (item of filteredBestsellers; track item.id) {
+    <article class="bs-card">
+      <div class="bs-card-media">
+        @if (item.fashionType) {
+          <span class="bs-badge">{{ item.fashionType }}</span>
+        }
 
-        <div class="bs-card-media">
-          <span class="bs-badge" *ngIf="item.fashionType">{{ item.fashionType }}</span>
+        <img class="bs-img" [src]="imageURL + (item.imagesPath?.[0] ?? '')" [alt]="item.name">
 
-          <img class="bs-img" [src]="imageURL + (item.imagesPath?.[0] ?? '')" [alt]="item.name">
-
-          <div class="bs-overlay">
-            <button type="button" class="bs-btn-view" (click)="goToProductDetails(item.id)">Quick view</button>
-            <button type="button" class="bs-btn-bag" aria-label="Add to bag" (click)="toggleCartlist(item)">
-              <i class="fa-solid fa-bag-shopping"></i>
-            </button>
-          </div>
+        <div class="bs-overlay">
+          <button type="button" class="bs-btn-view" (click)="goToProductDetails(item.id)">Quick view</button>
+          <button type="button" class="btn-quick-add" (click)="toggleCartlist(item)">
+  <span>{{ checkCartlist('' + item.id) ? 'Added ✓' : '+ Add' }}</span>
+</button>
         </div>
+      </div>
 
-        <div class="bs-info">
-          <h3 class="bs-title">{{ item.name }}</h3>
-          <p class="bs-price">₹{{ item.selling_price }}</p>
-        </div>
-
-      </article>
-    </div>
+      <div class="bs-info">
+        <h3 class="bs-title">{{ item.name }}</h3>
+        <p class="bs-price">₹{{ item.selling_price }}</p>
+      </div>
+    </article>
+  }
+</div>
 
   </div>
 </section>
@@ -180,7 +186,7 @@
               <span class="selling-price-red-cross" *ngIf="getDiscount(product) > 0"> ₹{{ product.listing_price }} </span>
             </div>
             <button type="button" class="btn-quick-add" (click)="toggleCartlist(product)"> 
-              <span>{{ checkCartlist(product.id) ? 'Added to Bag ✓' : 'Quick Add' }}</span>  
+              <span>{{ checkCartlist(product.id) ?  'Added ✓' : '+ Add' }}</span>  
             </button>
 
           </div>
@@ -262,62 +268,98 @@
 
   </div>
 </section>
-<section class="explore-section">
-  <div class="container">
+<section class="category-section">
+  <h2 class="section-title">SHOP BY CATEGORY</h2>
 
-    <!-- Section Header -->
-    <div class="section-header">
-      <span class="sub-heading">EXPLORE CATEGORIES</span>
-      <h2 class="main-title">A Wardrobe for Every Occasion</h2>
-      <p class="description">
-        A trusted name in multiple industries that symbolizes Innovation, Transparency, and Trust. A team of young and
-        dynamic professionals.
-      </p>
+  <div class="category-grid-container">
+    
+    <!-- Group 01: Pre-Winter -->
+    <div class="category-group group-pre-winter" [routerLink]="['/products']" [queryParams]="{ collection: 'pre-winter' }">
+      <div class="images-wrapper dual-col">
+        <div class="img-card animate-card">
+          <img src="assets/web/images/01.1.jpg" alt="Casual Knits and Sweaters">
+          <div class="card-overlay">
+            <span class="overlay-text italic">TIMELESS DESIGN</span>
+            <span class="overlay-text bold">REFINED COMFORT</span>
+          </div>
+        </div>
+        <div class="img-card animate-card">
+          <img src="assets/web/images/02.jpg" alt="Model in Autumn Wear">
+          <div class="card-overlay">
+            <span class="overlay-text italic">YOUR COMFORT</span>
+            <span class="overlay-text bold">STYLE</span>
+          </div>
+        </div>
+      </div>
+      <h3 class="group-label">01. PRE - WINTER</h3>
     </div>
 
-    <!-- 2x2 Bento Grid -->
-    <div class="explore-grid">
-
-      <!-- Box 1: Leather Bags Text Card -->
-      <div class="explore-card info-card">
-        <div class="card-inner">
-          <span class="badge-tag">FEATURED</span>
-          <h4>Leather Bags</h4>
-          <p>Latest Collection</p>
-          <a href="javascript:void(0)" class="discover-btn">
-            Discover More <span>→</span>
-          </a>
+    <!-- Group 02: Winter -->
+    <div class="category-group group-winter" [routerLink]="['/products']" [queryParams]="{ collection: 'winter' }">
+      <div class="images-wrapper dual-col">
+        <div class="img-card animate-card">
+          <img src="assets/web/images/03.jpg" alt="Heavy Quilted Winter Jackets">
+          <div class="card-overlay">
+            <span class="overlay-text italic">PREMIUM COMFORT MEETS</span>
+            <span class="overlay-text bold">CONTEMPORARY DESIGN</span>
+          </div>
+        </div>
+        <div class="img-card animate-card">
+          <img src="assets/web/images/04.jpg" alt="Heavy Parka Coat">
+          <div class="card-overlay">
+            <span class="overlay-text italic">MAKE EVERY LAYER</span>
+            <span class="overlay-text bold">A STATEMENT</span>
+          </div>
         </div>
       </div>
+      <h3 class="group-label">02. WINTER</h3>
+    </div>
 
-      <!-- Box 2: First Image -->
-      <div class="explore-card image-card">
-        <img src="assets/web/images/explore-image-01.jpg" alt="Leather Bag Collection">
-        <div class="image-overlay">
-          <span>Flat Lay Essentials</span>
+    <!-- Group 03: Suit / Blazer / Waistcoats -->
+    <div class="category-group group-formal" [routerLink]="['/products']" [queryParams]="{ collection: 'formal-wear' }">
+      <div class="images-wrapper triple-col">
+        <div class="img-card animate-card">
+          <img src="assets/web/images/05.jpg" alt="Signature Tailored Suits">
+          <div class="card-overlay-alt left-aligned">
+            <span class="overlay-text italic">THE ART OF</span>
+            <span class="overlay-text bold">DRESSING WELL</span>
+          </div>
+        </div>
+        <div class="img-card animate-card">
+          <img src="assets/web/images/06.jpg" alt="Traditional Waistcoat Styling">
+          <div class="card-overlay-alt centered">
+            <span class="overlay-text italic">ELEVATE ETHNIC</span>
+            <span class="overlay-text bold">ELEGANCE</span>
+          </div>
+        </div>
+        <div class="img-card animate-card">
+          <img src="assets/web/images/07.jpg" alt="Contemporary Blazer Layering">
+          <div class="card-overlay-alt bottom-left">
+            <span class="overlay-text italic">REDEFINING</span>
+            <span class="overlay-text bold">MODERN STYLE</span>
+          </div>
         </div>
       </div>
+      <h3 class="group-label">03. SUIT/BLAZER/WAITSCOATS</h3>
+    </div>
 
-      <!-- Box 3: Second Image -->
-      <div class="explore-card image-card">
-        <img src="assets/web/images/explore-image-02.jpg" alt="Lifestyle Leather Bag">
-        <div class="image-overlay">
-          <span>Urban Fashion</span>
+    <!-- Group 04: Accessories -->
+    <div class="category-group group-accessories" [routerLink]="['/products']" [queryParams]="{ collection: 'accessories' }">
+      <div class="images-wrapper asymmetric-collage">
+                <div class="img-card large-anchor animate-card">
+          <img src="assets/web/images/tie.jpg" alt="Woven Neckties Collage">
         </div>
-      </div>
-
-      <!-- Box 4: Different Types Text Card -->
-      <div class="explore-card info-card dark-card">
-        <div class="card-inner">
-          <span class="badge-tag gold">VARIETY</span>
-          <h4>Different Types</h4>
-          <p class="count-text">Over 304+ Products</p>
-          <a href="javascript:void(0)" class="discover-btn">
-            Explore All <span>→</span>
-          </a>
+        <div class="sub-row">
+          <div class="img-card side-by-side animate-card">
+            <img src="assets/web/images/belt.jpg" alt="Crafted Leather Belts">
+          </div>
+          <div class="img-card side-by-side animate-card">
+            <img src="assets/web/images/hang.jpg" alt="Handkerchief Sets">
+          </div>
         </div>
-      </div>
 
+      </div>
+      <h3 class="group-label font-spaced">04. ACCESSORIES</h3>
     </div>
 
   </div>
